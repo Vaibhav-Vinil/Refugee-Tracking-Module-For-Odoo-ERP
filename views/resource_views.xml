@@ -9,6 +9,7 @@
                 <field name="camp_id"/>
                 <field name="resource_type"/>
                 <field name="quantity_available"/>
+                <field name="quantity_required"/>
                 <field name="stock_ratio" widget="progressbar"/>
                 <field name="expiry_date" optional="show"/>
             </list>
@@ -25,6 +26,7 @@
                         <field name="camp_id"/>
                         <field name="resource_type"/>
                         <field name="quantity_available"/>
+                        <field name="quantity_required"/>
                         <field name="stock_ratio" widget="progressbar"/>
                         <field name="expiry_date"/>
                     </group>
@@ -33,9 +35,25 @@
             </form>
         </field>
     </record>
+    <record id="view_refugee_resource_search" model="ir.ui.view">
+        <field name="name">refugee.resource.inventory.search</field>
+        <field name="model">refugee.resource.inventory</field>
+        <field name="arch" type="xml">
+            <search string="Search Resources">
+                <field name="name"/>
+                <field name="camp_id"/>
+                <field name="resource_type"/>
+                <separator/>
+                <filter string="Group by Camp" name="group_camp" context="{'group_by':'camp_id'}"/>
+                <filter string="Group by Type" name="group_type" context="{'group_by':'resource_type'}"/>
+            </search>
+        </field>
+    </record>
+
     <record id="action_refugee_resource" model="ir.actions.act_window">
         <field name="name">Resource Inventory</field>
         <field name="res_model">refugee.resource.inventory</field>
         <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_refugee_resource_search"/>
     </record>
 </odoo>

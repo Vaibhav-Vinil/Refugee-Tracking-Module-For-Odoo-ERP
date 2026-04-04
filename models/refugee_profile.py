@@ -110,14 +110,13 @@ class RefugeeProfile(models.Model):
         ],
         default="unknown",
     )
+    deceased = fields.Boolean(string="Deceased", default=False)
 
     active = fields.Boolean(default=True)
 
     aid_line_ids = fields.One2many("refugee.aid.distribution", "refugee_id", string="Aid Lines")
     aid_count = fields.Integer(compute="_compute_counts")
     family_member_count = fields.Integer(compute="_compute_counts")
-    task_ids = fields.One2many("refugee.logistics.task", "assigned_to", string="Logistics Tasks")
-    task_count = fields.Integer(compute="_compute_counts")
 
     @api.depends("date_of_birth")
     def _compute_age(self):
@@ -167,11 +166,10 @@ class RefugeeProfile(models.Model):
         for rec in self:
             rec.kanban_color = color_map.get(rec.vulnerability_level, 0)
 
-    @api.depends("family_id", "aid_line_ids", "task_ids")
+    @api.depends("family_id", "aid_line_ids")
     def _compute_counts(self):
         for rec in self:
             rec.aid_count = len(rec.aid_line_ids)
-            rec.task_count = len(rec.task_ids)
             if rec.family_id:
                 rec.family_member_count = self.search_count(
                     [("family_id", "=", rec.family_id.id), ("active", "=", True)]
@@ -181,9 +179,9 @@ class RefugeeProfile(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        Family = self.env["refugee.family"]
         for vals in vals_list:
             if vals.get("family_name") and not vals.get("family_id"):
-                Family = self.env["refugee.family"]
                 family = Family.search([("name", "=", vals["family_name"])], limit=1)
                 if not family:
                     family = Family.create({"name": vals["family_name"]})
@@ -201,6 +199,14 @@ class RefugeeProfile(models.Model):
         notify_candidates = self.env["refugee.profile"]
         if vals.get("requires_urgent_care"):
             notify_candidates = self.filtered(lambda r: not r.requires_urgent_care)
+        
+        if vals.get("family_name") and not vals.get("family_id") and not self.mapped('family_id'):
+            Family = self.env["refugee.family"]
+            family = Family.search([("name", "=", vals["family_name"])], limit=1)
+            if not family:
+                family = Family.create({"name": vals["family_name"]})
+            vals["family_id"] = family.id
+
         res = super().write(vals)
         if any(k in vals for k in ("is_head_of_family", "family_id", "is_head_of_household")):
             self._sync_family_head()
@@ -261,17 +267,6 @@ class RefugeeProfile(models.Model):
             "view_mode": "list,form",
             "domain": [("refugee_id", "=", self.id)],
             "context": {"default_refugee_id": self.id},
-        }
-
-    def action_open_tasks(self):
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": "Tasks",
-            "res_model": "refugee.logistics.task",
-            "view_mode": "list,form,kanban",
-            "domain": [("assigned_to", "=", self.id)],
-            "context": {"default_assigned_to": self.id},
         }
 
     def action_auto_assign_roles(self):

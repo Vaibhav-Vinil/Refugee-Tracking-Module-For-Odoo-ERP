@@ -23,9 +23,29 @@ class RefugeeFamily(models.Model):
             ("complete", "Complete"),
             ("separated", "Separated"),
             ("partial", "Partial"),
+            ("location_unknown", "Location unknown/Missing"),
         ],
         default="complete",
+        compute="_compute_family_status",
+        store=True,
+        readonly=False,
     )
+
+    @api.depends("member_ids.camp_id", "member_ids.active", "member_ids.deceased")
+    def _compute_family_status(self):
+        for rec in self:
+            if rec.status in ("separated", "location_unknown"):
+                continue  # Keep manual override
+            members = rec.member_ids.filtered(lambda m: m.active and not m.deceased)
+            if not members:
+                rec.status = "complete"
+                continue
+            camps = members.mapped("camp_id")
+            if len(camps) <= 1:
+                rec.status = "complete"
+            else:
+                rec.status = "partial"
+
 
     @api.depends("member_ids", "head_id")
     def _compute_member_stats(self):

@@ -26,12 +26,13 @@
                         <field name="status"/>
                         <field name="head_id"/>
                     </group>
-                    <field name="member_ids" mode="list,kanban">
+                    <field name="member_ids">
                         <list>
                             <field name="refugee_id"/>
                             <field name="name"/>
                             <field name="journey_stage"/>
                             <field name="camp_id"/>
+                            <field name="deceased"/>
                         </list>
                     </field>
                 </sheet>

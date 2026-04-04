@@ -75,13 +75,7 @@
                                 <span class="o_stat_value"><field name="aid_count"/></span>
                             </div>
                         </button>
-                        <button name="action_open_tasks" type="object" class="oe_stat_button" icon="fa-tasks"
-                            groups="refugee_crisis_erp.group_refugee_manager">
-                            <div class="o_stat_info">
-                                <span class="o_stat_text">Tasks</span>
-                                <span class="o_stat_value"><field name="task_count"/></span>
-                            </div>
-                        </button>
+
                     </div>
                     <field name="id_card_photo" widget="image" class="oe_avatar" options="{'preview_image': 'id_card_photo'}"
                         groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical"/>
@@ -122,6 +116,7 @@
                                 <field name="medical_conditions"/>
                                 <field name="requires_urgent_care"/>
                                 <field name="health_status"/>
+                                <field name="deceased"/>
                             </group>
                         </page>
                         <page string="Skills &amp; Role" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical">

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_refugee_volunteer" model="ir.actions.act_window">
+        <field name="name">Volunteers</field>
+        <field name="res_model">refugee.volunteer</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_refugee_volunteer_list" model="ir.ui.view">
+        <field name="name">refugee.volunteer.list</field>
+        <field name="model">refugee.volunteer</field>
+        <field name="arch" type="xml">
+            <list string="Volunteers">
+                <field name="name"/>
+                <field name="group_id"/>
+                <field name="phone"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_refugee_volunteer_group" model="ir.actions.act_window">
+        <field name="name">Volunteer Groups</field>
+        <field name="res_model">refugee.volunteer.group</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_refugee_volunteers" name="Volunteers" parent="menu_refugee_root" sequence="85"
+        action="action_refugee_volunteer"
+        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_field_worker"/>
+        
+    <menuitem id="menu_refugee_volunteer_groups" name="Volunteer Groups" parent="menu_refugee_root" sequence="86"
+        action="action_refugee_volunteer_group"
+        groups="refugee_crisis_erp.group_refugee_manager"/>
+</odoo>

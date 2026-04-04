@@ -19,11 +19,9 @@ class RefugeeLogisticsTask(models.Model):
         default="delivery",
         required=True,
     )
-    assigned_to = fields.Many2one(
-        "refugee.profile",
-        string="Assigned Worker (Refugee)",
-        ondelete="set null",
-        index=True,
+    volunteer_ids = fields.Many2many(
+        "refugee.volunteer",
+        string="Assigned Volunteers",
     )
     status = fields.Selection(
         selection=[

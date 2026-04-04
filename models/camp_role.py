@@ -13,8 +13,10 @@ class RefugeeCampRole(models.Model):
     capacity = fields.Integer(default=1)
     assigned_profile_ids = fields.One2many("refugee.profile", "assigned_role_id", string="Assigned")
     assigned_count = fields.Integer(compute="_compute_assigned_count", store=True)
+    has_capacity = fields.Boolean(compute="_compute_assigned_count", store=True)
 
-    @api.depends("assigned_profile_ids", "assigned_profile_ids.active")
+    @api.depends("assigned_profile_ids", "assigned_profile_ids.active", "capacity")
     def _compute_assigned_count(self):
         for role in self:
             role.assigned_count = len(role.assigned_profile_ids.filtered("active"))
+            role.has_capacity = role.assigned_count < role.capacity

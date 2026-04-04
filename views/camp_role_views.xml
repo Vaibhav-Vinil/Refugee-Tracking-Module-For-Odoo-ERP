@@ -58,6 +58,19 @@
             </kanban>
         </field>
     </record>
+
+    <record id="view_refugee_camp_role_search" model="ir.ui.view">
+        <field name="name">refugee.camp.role.search</field>
+        <field name="model">refugee.camp.role</field>
+        <field name="arch" type="xml">
+            <search string="Search Camp Roles">
+                <field name="name"/>
+                <field name="camp_id"/>
+                <filter string="Has Available Capacity" name="available_roles" domain="[('has_capacity', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
     <record id="action_refugee_camp_role" model="ir.actions.act_window">
         <field name="name">Camp Roles</field>
         <field name="res_model">refugee.camp.role</field>

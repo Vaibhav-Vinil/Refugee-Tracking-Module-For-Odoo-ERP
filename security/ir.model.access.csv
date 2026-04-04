@@ -25,3 +25,7 @@ access_aid_distribution_medical,refugee.aid.distribution.medical,model_refugee_a
 access_logistics_task_medical,refugee.logistics.task.medical,model_refugee_logistics_task,group_refugee_medical,1,0,0,0
 access_aid_distribution_portal,refugee.aid.distribution.portal,model_refugee_aid_distribution,base.group_portal,1,1,1,0
 access_refugee_profile_portal,refugee.profile.portal,model_refugee_profile,base.group_portal,1,0,0,0
+access_volunteer_manager,refugee.volunteer.manager,model_refugee_volunteer,group_refugee_manager,1,1,1,1
+access_volunteer_worker,refugee.volunteer.worker,model_refugee_volunteer,group_refugee_field_worker,1,1,1,0
+access_volunteer_group_manager,refugee.volunteer.group.manager,model_refugee_volunteer_group,group_refugee_manager,1,1,1,1
+access_volunteer_group_worker,refugee.volunteer.group.worker,model_refugee_volunteer_group,group_refugee_field_worker,1,1,1,0

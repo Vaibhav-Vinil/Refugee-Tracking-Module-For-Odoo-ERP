@@ -8,6 +8,7 @@
                 <field name="date"/>
                 <field name="refugee_id"/>
                 <field name="resource_id"/>
+                <field name="distributed_by_id"/>
                 <field name="quantity"/>
                 <field name="status"/>
             </list>
@@ -22,6 +23,7 @@
                     <group>
                         <field name="refugee_id"/>
                         <field name="resource_id"/>
+                        <field name="distributed_by_id"/>
                         <field name="quantity"/>
                         <field name="date"/>
                         <field name="status"/>
