@@ -166,13 +166,21 @@ class RefugeeProfile(models.Model):
         for rec in self:
             rec.kanban_color = color_map.get(rec.vulnerability_level, 0)
 
-    @api.depends("family_id", "aid_line_ids")
+    @api.depends(
+        "family_id",
+        "aid_line_ids",
+        "family_id.member_ids",
+        "family_id.member_ids.active",
+        "family_id.member_ids.deceased",
+    )
     def _compute_counts(self):
         for rec in self:
             rec.aid_count = len(rec.aid_line_ids)
             if rec.family_id:
-                rec.family_member_count = self.search_count(
-                    [("family_id", "=", rec.family_id.id), ("active", "=", True)]
+                rec.family_member_count = len(
+                    rec.family_id.member_ids.filtered(
+                        lambda m: m.active and not m.deceased
+                    )
                 )
             else:
                 rec.family_member_count = 0
@@ -188,6 +196,8 @@ class RefugeeProfile(models.Model):
                 vals["family_id"] = family.id
             if not vals.get("refugee_id"):
                 vals["refugee_id"] = self.env["ir.sequence"].next_by_code("refugee.profile.id")
+            if vals.get("deceased"):
+                vals["assigned_role_id"] = False
         records = super().create(vals_list)
         records._sync_family_head()
         for rec in records:
@@ -206,6 +216,11 @@ class RefugeeProfile(models.Model):
             if not family:
                 family = Family.create({"name": vals["family_name"]})
             vals["family_id"] = family.id
+
+        if vals.get("deceased"):
+            vals = dict(vals)
+            if vals["deceased"]:
+                vals["assigned_role_id"] = False
 
         res = super().write(vals)
         if any(k in vals for k in ("is_head_of_family", "family_id", "is_head_of_household")):
@@ -274,6 +289,8 @@ class RefugeeProfile(models.Model):
         Role = self.env["refugee.camp.role"]
         assigned = 0
         for refugee in self:
+            if refugee.deceased or not refugee.active:
+                continue
             if not refugee.camp_id or refugee.assigned_role_id:
                 continue
             roles = Role.search([("camp_id", "=", refugee.camp_id.id)])
@@ -301,7 +318,7 @@ class RefugeeProfile(models.Model):
 
     @api.onchange("skill_ids", "camp_id")
     def _onchange_suggest_role(self):
-        if not self.camp_id or not self.skill_ids:
+        if self.deceased or not self.camp_id or not self.skill_ids:
             return
         roles = self.env["refugee.camp.role"].search(
             [("camp_id", "=", self.camp_id.id)]

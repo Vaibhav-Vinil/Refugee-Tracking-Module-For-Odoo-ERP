@@ -40,10 +40,12 @@ class RefugeeCampManagement(models.Model):
     refugee_ids = fields.One2many("refugee.profile", "camp_id", string="Refugees")
     resource_ids = fields.One2many("refugee.resource.inventory", "camp_id", string="Resources")
 
-    @api.depends("refugee_ids", "refugee_ids.active", "total_capacity")
+    @api.depends("refugee_ids", "refugee_ids.active", "refugee_ids.deceased", "total_capacity")
     def _compute_occupancy_metrics(self):
         for rec in self:
-            count = len(rec.refugee_ids.filtered("active"))
+            count = len(
+                rec.refugee_ids.filtered(lambda p: p.active and not p.deceased)
+            )
             rec.current_occupancy = count
             if rec.total_capacity and count > rec.total_capacity:
                 rec.overcrowded_status = "overcrowded"

@@ -15,8 +15,16 @@ class RefugeeCampRole(models.Model):
     assigned_count = fields.Integer(compute="_compute_assigned_count", store=True)
     has_capacity = fields.Boolean(compute="_compute_assigned_count", store=True)
 
-    @api.depends("assigned_profile_ids", "assigned_profile_ids.active", "capacity")
+    @api.depends(
+        "assigned_profile_ids",
+        "assigned_profile_ids.active",
+        "assigned_profile_ids.deceased",
+        "capacity",
+    )
     def _compute_assigned_count(self):
         for role in self:
-            role.assigned_count = len(role.assigned_profile_ids.filtered("active"))
+            assigned = role.assigned_profile_ids.filtered(
+                lambda p: p.active and not p.deceased
+            )
+            role.assigned_count = len(assigned)
             role.has_capacity = role.assigned_count < role.capacity

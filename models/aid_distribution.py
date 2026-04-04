@@ -25,7 +25,7 @@ class RefugeeAidDistribution(models.Model):
         string="Distributed By",
         ondelete="set null",
     )
-    quantity = fields.Float(default=1.0)
+    quantity = fields.Integer(string="Quantity", default=1)
     date = fields.Datetime(default=fields.Datetime.now)
     status = fields.Selection(
         selection=[
@@ -38,6 +38,9 @@ class RefugeeAidDistribution(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        for vals in vals_list:
+            if "quantity" in vals and vals["quantity"] is not None:
+                vals["quantity"] = int(vals["quantity"])
         records = super().create(vals_list)
         for rec in records:
             if rec.status == "delivered" and rec.resource_id:
@@ -45,6 +48,9 @@ class RefugeeAidDistribution(models.Model):
         return records
 
     def write(self, vals):
+        if "quantity" in vals and vals["quantity"] is not None:
+            vals = dict(vals)
+            vals["quantity"] = int(vals["quantity"])
         # Optional: handle transition to "delivered"
         for rec in self:
             old_status = rec.status

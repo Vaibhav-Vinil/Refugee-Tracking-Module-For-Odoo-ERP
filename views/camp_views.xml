@@ -41,6 +41,7 @@
                                 <list>
                                     <field name="refugee_id"/>
                                     <field name="name"/>
+                                    <field name="deceased" optional="show"/>
                                     <field name="vulnerability_level"/>
                                     <field name="journey_stage"/>
                                 </list>
@@ -51,8 +52,9 @@
                                 <list>
                                     <field name="name"/>
                                     <field name="resource_type"/>
-                                    <field name="quantity_available"/>
-                                    <field name="stock_ratio" widget="progressbar"/>
+                                    <field name="quantity_available" widget="progressbar" options="{'max_value': 'quantity_required'}"/>
+                                    <field name="quantity_required" optional="hide"/>
+                                    <field name="stock_ratio" optional="hide"/>
                                 </list>
                             </field>
                         </page>

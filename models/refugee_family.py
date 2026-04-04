@@ -47,10 +47,11 @@ class RefugeeFamily(models.Model):
                 rec.status = "partial"
 
 
-    @api.depends("member_ids", "head_id")
+    @api.depends("member_ids", "member_ids.active", "member_ids.deceased", "head_id", "status")
     def _compute_member_stats(self):
         for rec in self:
-            rec.member_count = len(rec.member_ids)
+            living = rec.member_ids.filtered(lambda m: m.active and not m.deceased)
+            rec.member_count = len(living)
             if not rec.head_id and rec.member_ids:
                 rec.missing_member_hint = "No head of family assigned"
             elif rec.status == "separated":

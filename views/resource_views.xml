@@ -8,9 +8,9 @@
                 <field name="name"/>
                 <field name="camp_id"/>
                 <field name="resource_type"/>
-                <field name="quantity_available"/>
+                <field name="quantity_available" widget="progressbar" options="{'max_value': 'quantity_required'}"/>
                 <field name="quantity_required"/>
-                <field name="stock_ratio" widget="progressbar"/>
+                <field name="stock_ratio"/>
                 <field name="expiry_date" optional="show"/>
             </list>
         </field>
@@ -25,9 +25,9 @@
                         <field name="name"/>
                         <field name="camp_id"/>
                         <field name="resource_type"/>
-                        <field name="quantity_available"/>
+                        <field name="quantity_available" widget="progressbar" options="{'max_value': 'quantity_required'}"/>
                         <field name="quantity_required"/>
-                        <field name="stock_ratio" widget="progressbar"/>
+                        <field name="stock_ratio" readonly="1"/>
                         <field name="expiry_date"/>
                     </group>
                 </sheet>

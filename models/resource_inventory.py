@@ -19,29 +19,33 @@ class RefugeeResourceInventory(models.Model):
         default="food",
         required=True,
     )
-    quantity_available = fields.Float(default=0.0)
-    quantity_required = fields.Float(default=100.0)
+    quantity_available = fields.Integer(string="Quantity Available", default=0)
+    quantity_required = fields.Integer(string="Quantity Required", default=100)
     expiry_date = fields.Date()
     camp_id = fields.Many2one("refugee.camp.management", required=True, ondelete="cascade")
     stock_ratio = fields.Float(
-        string="Stock Level",
+        string="Stock fill (%)",
         compute="_compute_stock_ratio",
         store=True,
+        digits=(16, 2),
+        help="Percentage of required quantity currently available (can exceed 100% if overstocked).",
     )
 
     @api.depends("quantity_available", "quantity_required")
     def _compute_stock_ratio(self):
         for rec in self:
-            if rec.quantity_required:
-                rec.stock_ratio = min(1.0, rec.quantity_available / rec.quantity_required)
+            req = rec.quantity_required
+            if req:
+                rec.stock_ratio = (rec.quantity_available / req) * 100.0
             else:
-                rec.stock_ratio = 1.0
+                rec.stock_ratio = 100.0
 
     def write(self, vals):
         res = super().write(vals)
         if "quantity_available" in vals:
             for rec in self:
-                if rec.quantity_required > 0 and rec.quantity_available < (rec.quantity_required * 0.2):
+                threshold = max(1, (rec.quantity_required * 20) // 100) if rec.quantity_required else 0
+                if rec.quantity_required > 0 and rec.quantity_available < threshold:
                     # Check if already a pending task to prevent spam
                     existing_task = self.env["refugee.logistics.task"].search([
                         ("resource_id", "=", rec.id),
@@ -60,14 +64,16 @@ class RefugeeResourceInventory(models.Model):
 
     @api.model
     def _cron_check_low_stock(self):
-        threshold = float(
-            self.env["ir.config_parameter"]
-            .sudo()
-            .get_param("refugee_crisis_erp.low_stock_threshold", "10")
+        threshold = int(
+            float(
+                self.env["ir.config_parameter"]
+                .sudo()
+                .get_param("refugee_crisis_erp.low_stock_threshold", "10")
+            )
         )
         low = self.search([("quantity_available", "<", threshold)])
         for rec in low:
             rec.message_post(
-                body="Low stock alert: %s is below the configured threshold (%.1f)."
+                body="Low stock alert: %s is below the configured threshold (%s)."
                 % (rec.name, threshold)
             )

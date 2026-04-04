@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-RefugeeConnect - Comprehensive Seed Data Script
-Run inside Odoo shell: exec(open('Workshop/refugee_crisis_erp/seed_data_v2.py').read())
+Run the below line to create the seed data in the database.
+@"exec(open(r'Workshop/refugee_crisis_erp/seed_data_v2.py', encoding='utf-8').read())"@ | python odoo-bin shell -c odoo.conf -d YOUR_DATABASE_NAME
 """
 import random
 from datetime import timedelta, date, datetime
@@ -199,7 +199,7 @@ def generate_comprehensive_data(env):
         base_name = res.name.split(' – ')[0]
         if base_name in low_stock_items:
             # Write triggers the auto-task creation
-            res.write({'quantity_available': round(res.quantity_required * 0.08, 1)})
+            res.write({'quantity_available': max(0, (res.quantity_required * 8) // 100)})
 
     # ── 6. FAMILIES & REFUGEE PROFILES ────────────────────────────────────────
     print("\n[6/8] Creating Families & Refugee Profiles...")
@@ -353,7 +353,7 @@ def generate_comprehensive_data(env):
                 camp_resources = resources
             chosen_resource = random.choice(camp_resources)
             status = 'delivered' if i < int(len(all_profiles) * 0.65) else 'pending'
-            qty = round(random.uniform(1.0, 5.0), 1)
+            qty = random.randint(1, 5)
 
             Aid.create({
                 'refugee_id': prof.id,
