@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_refugee_camp_role_list" model="ir.ui.view">
+        <field name="name">refugee.camp.role.list</field>
+        <field name="model">refugee.camp.role</field>
+        <field name="arch" type="xml">
+            <list string="Camp Roles">
+                <field name="name"/>
+                <field name="camp_id"/>
+                <field name="capacity"/>
+                <field name="assigned_count"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_refugee_camp_role_form" model="ir.ui.view">
+        <field name="name">refugee.camp.role.form</field>
+        <field name="model">refugee.camp.role</field>
+        <field name="arch" type="xml">
+            <form string="Camp Role">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="camp_id"/>
+                        <field name="capacity"/>
+                        <field name="assigned_count"/>
+                    </group>
+                    <field name="required_skill_ids" widget="many2many_tags"/>
+                    <field name="assigned_profile_ids" readonly="1">
+                        <list>
+                            <field name="refugee_id"/>
+                            <field name="name"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_refugee_camp_role_kanban" model="ir.ui.view">
+        <field name="name">refugee.camp.role.kanban</field>
+        <field name="model">refugee.camp.role</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="camp_id"/>
+                <field name="capacity"/>
+                <field name="assigned_count"/>
+                <field name="required_skill_ids"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="fw-bold"><field name="name"/></div>
+                            <div class="text-muted small"><field name="camp_id"/></div>
+                            <div>Assigned: <field name="assigned_count"/> / <field name="capacity"/></div>
+                            <div class="mt-2"><field name="required_skill_ids" widget="many2many_tags"/></div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record id="action_refugee_camp_role" model="ir.actions.act_window">
+        <field name="name">Camp Roles</field>
+        <field name="res_model">refugee.camp.role</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+</odoo>

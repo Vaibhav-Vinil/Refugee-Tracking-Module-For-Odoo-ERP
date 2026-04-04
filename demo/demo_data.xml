@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="demo_skill_nurse" model="refugee.skill">
+        <field name="name">Nursing</field>
+        <field name="category">medical</field>
+    </record>
+    <record id="demo_skill_teacher" model="refugee.skill">
+        <field name="name">Teaching</field>
+        <field name="category">education</field>
+    </record>
+
+    <record id="demo_camp_alpha" model="refugee.camp.management">
+        <field name="name">Camp Alpha</field>
+        <field name="location_label">Demo border region</field>
+        <field name="total_capacity">500</field>
+        <field name="latitude">33.5138</field>
+        <field name="longitude">36.2765</field>
+    </record>
+
+    <record id="demo_camp_alpha_block_a" model="refugee.camp.management">
+        <field name="name">Block A</field>
+        <field name="parent_id" ref="demo_camp_alpha"/>
+        <field name="total_capacity">120</field>
+    </record>
+
+    <record id="demo_role_nurse" model="refugee.camp.role">
+        <field name="name">Camp Nurse</field>
+        <field name="camp_id" ref="demo_camp_alpha"/>
+        <field name="capacity">3</field>
+        <field name="required_skill_ids" eval="[(6, 0, [ref('demo_skill_nurse')])]"/>
+    </record>
+
+    <record id="demo_family_demo" model="refugee.family">
+        <field name="name">Al-Khatib</field>
+        <field name="camp_id" ref="demo_camp_alpha"/>
+        <field name="status">complete</field>
+    </record>
+
+    <record id="demo_refugee_1" model="refugee.profile">
+        <field name="name">Sara Demo</field>
+        <field name="family_id" ref="demo_family_demo"/>
+        <field name="gender">female</field>
+        <field name="date_of_birth">2010-01-15</field>
+        <field name="camp_id" ref="demo_camp_alpha"/>
+        <field name="journey_stage">medical</field>
+        <field name="vulnerability_level">medium</field>
+        <field name="skill_ids" eval="[(6, 0, [ref('demo_skill_nurse')])]"/>
+    </record>
+
+    <record id="demo_resource_water" model="refugee.resource.inventory">
+        <field name="name">Bottled water pallets</field>
+        <field name="camp_id" ref="demo_camp_alpha"/>
+        <field name="resource_type">water</field>
+        <field name="quantity_available">250</field>
+    </record>
+
+    <record id="demo_aid_1" model="refugee.aid.distribution">
+        <field name="refugee_id" ref="demo_refugee_1"/>
+        <field name="resource_id" ref="demo_resource_water"/>
+        <field name="quantity">2</field>
+        <field name="status">delivered</field>
+    </record>
+
+    <record id="demo_task_1" model="refugee.logistics.task">
+        <field name="name">Deliver water to Block A</field>
+        <field name="task_type">delivery</field>
+        <field name="assigned_to" ref="demo_refugee_1"/>
+        <field name="status">todo</field>
+        <field name="destination">Block A</field>
+    </record>
+</odoo>

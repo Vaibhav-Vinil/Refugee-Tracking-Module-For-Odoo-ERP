@@ -1,0 +1,51 @@
+# -*- coding: utf-8 -*-
+
+from odoo import api, fields, models
+
+
+class RefugeeCampManagement(models.Model):
+    _name = "refugee.camp.management"
+    _description = "Camp / Shelter Location"
+    _inherit = ["mail.thread"]
+    _parent_name = "parent_id"
+    _parent_store = True
+    _order = "parent_path, name"
+
+    name = fields.Char(required=True, translate=True)
+    parent_id = fields.Many2one(
+        "refugee.camp.management",
+        string="Parent Location",
+        index=True,
+        ondelete="restrict",
+    )
+    parent_path = fields.Char(index=True)
+    child_ids = fields.One2many("refugee.camp.management", "parent_id", string="Child Locations")
+    location_label = fields.Char(string="Address / Area")
+    total_capacity = fields.Integer(string="Total Capacity", default=0)
+    current_occupancy = fields.Integer(
+        compute="_compute_occupancy_metrics",
+        store=True,
+        string="Current Occupancy",
+    )
+    latitude = fields.Float(digits=(10, 7), string="Latitude")
+    longitude = fields.Float(digits=(10, 7), string="Longitude")
+    overcrowded_status = fields.Selection(
+        selection=[
+            ("normal", "Normal"),
+            ("overcrowded", "Overcrowded"),
+        ],
+        compute="_compute_occupancy_metrics",
+        store=True,
+    )
+    refugee_ids = fields.One2many("refugee.profile", "camp_id", string="Refugees")
+    resource_ids = fields.One2many("refugee.resource.inventory", "camp_id", string="Resources")
+
+    @api.depends("refugee_ids", "refugee_ids.active", "total_capacity")
+    def _compute_occupancy_metrics(self):
+        for rec in self:
+            count = len(rec.refugee_ids.filtered("active"))
+            rec.current_occupancy = count
+            if rec.total_capacity and count > rec.total_capacity:
+                rec.overcrowded_status = "overcrowded"
+            else:
+                rec.overcrowded_status = "normal"

@@ -1,0 +1,36 @@
+# -*- coding: utf-8 -*-
+{
+    "name": "RefugeeConnect — Humanitarian Suite",
+    "version": "19.0.1.0.0",
+    "category": "Services",
+    "summary": "Refugee profiles, camps, aid, logistics, and dashboards (RefugeeConnect / hackathon module).",
+    "depends": ["mail", "portal", "web"],
+    "license": "LGPL-3",
+    "author": "RefugeeConnect",
+    "application": True,
+    "data": [
+        "security/refugee_security.xml",
+        "security/ir.model.access.csv",
+        "data/refugee_sequence.xml",
+        "data/refugee_cron.xml",
+        "views/refugee_skill_views.xml",
+        "views/refugee_family_views.xml",
+        "views/camp_views.xml",
+        "views/camp_role_views.xml",
+        "views/resource_views.xml",
+        "views/aid_views.xml",
+        "views/logistics_views.xml",
+        "views/refugee_profile_views.xml",
+        "views/refugee_menus.xml",
+        "report/refugee_reports.xml",
+    ],
+    "demo": [
+        "demo/demo_data.xml",
+    ],
+    "assets": {
+        "web.assets_backend": [
+            "refugee_crisis_erp/static/src/camp_map/camp_map.js",
+        ],
+    },
+    "installable": True,
+}

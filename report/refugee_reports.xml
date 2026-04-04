@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_refugee_id_card" model="report.paperformat">
+        <field name="name">Refugee ID Card</field>
+        <field name="format">custom</field>
+        <field name="page_height">85</field>
+        <field name="page_width">54</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">2</field>
+        <field name="margin_bottom">2</field>
+        <field name="margin_left">2</field>
+        <field name="margin_right">2</field>
+        <field name="header_line" eval="False"/>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_refugee_id_card" model="ir.actions.report">
+        <field name="name">Refugee ID Card</field>
+        <field name="model">refugee.profile</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">refugee_crisis_erp.report_refugee_id_card</field>
+        <field name="report_file">refugee_crisis_erp.report_refugee_id_card</field>
+        <field name="paperformat_id" ref="refugee_crisis_erp.paperformat_refugee_id_card"/>
+        <field name="print_report_name">'ID - %s' % (object.refugee_id or object.name).replace('/', '-')</field>
+        <field name="binding_model_id" ref="refugee_crisis_erp.model_refugee_profile"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_refugee_id_card">
+        <t t-call="web.basic_layout">
+            <div class="page">
+                <t t-foreach="docs" t-as="o">
+                    <div style="width: 100%; border: 1px solid #333; border-radius: 8px; padding: 8px; margin-bottom: 8px;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="width: 35%; vertical-align: top;">
+                                    <t t-if="o.id_card_photo">
+                                        <img t-att-src="image_data_uri(o.id_card_photo)" style="max-width: 100%; max-height: 90pt; border-radius: 4px;" alt="Photo"/>
+                                    </t>
+                                    <t t-else="">
+                                        <div style="height: 90pt; background: #eee; text-align: center; line-height: 90pt; font-size: 9pt;">No photo</div>
+                                    </t>
+                                </td>
+                                <td style="width: 65%; vertical-align: top; padding-left: 8px;">
+                                    <div style="font-size: 8pt; color: #666;">RefugeeConnect</div>
+                                    <div style="font-size: 14pt; font-weight: bold;" t-out="o.name"/>
+                                    <div style="font-size: 11pt; margin-top: 4px;"><span t-out="o.refugee_id"/></div>
+                                    <t t-if="o.nationality_id">
+                                        <div style="font-size: 9pt; margin-top: 4px;" t-out="o.nationality_id.name"/>
+                                    </t>
+                                    <div style="margin-top: 8px;">
+                                        <t t-if="o.qr_code">
+                                            <img t-att-src="image_data_uri(o.qr_code)" style="width: 72pt; height: 72pt;" alt="QR"/>
+                                        </t>
+                                    </div>
+                                    <div style="font-size: 7pt; color: #444; margin-top: 4px;">Scan to open profile in Odoo (login required).</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>
