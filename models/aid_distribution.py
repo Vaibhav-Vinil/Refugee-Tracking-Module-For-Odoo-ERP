@@ -44,7 +44,7 @@ class RefugeeAidDistribution(models.Model):
         records = super().create(vals_list)
         for rec in records:
             if rec.status == "delivered" and rec.resource_id:
-                rec.resource_id.quantity_available -= rec.quantity
+                rec.resource_id.quantity_available += rec.quantity
         return records
 
     def write(self, vals):
@@ -56,5 +56,5 @@ class RefugeeAidDistribution(models.Model):
             old_status = rec.status
             if vals.get("status") == "delivered" and old_status != "delivered":
                 if rec.resource_id:
-                    rec.resource_id.quantity_available -= rec.quantity
+                    rec.resource_id.quantity_available += rec.quantity
         return super().write(vals)
