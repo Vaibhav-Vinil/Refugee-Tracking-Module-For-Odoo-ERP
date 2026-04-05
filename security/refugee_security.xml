@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record model="res.groups.privilege" id="res_groups_privilege_refugeeconnect">
-        <field name="name">RefugeeConnect</field>
+        <field name="name">Onwards</field>
         <field name="sequence">55</field>
         <field name="category_id" ref="base.module_category_services"/>
     </record>

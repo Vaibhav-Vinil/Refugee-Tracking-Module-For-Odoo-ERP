@@ -1,4 +1,4 @@
-# RefugeeConnect — Humanitarian Suite
+# Onwards 
 
 An extensive, fully-featured custom Odoo module designed to facilitate and streamline the management of refugee camps, crises, and humanitarian efforts. 
 
@@ -18,7 +18,7 @@ An extensive, fully-featured custom Odoo module designed to facilitate and strea
 
 ## Access Rights
 Four main customizable user groups exist:
-1. **RefugeeConnect Manager**: Full global access.
+1. **Onwards Manager**: Full global access.
 2. **Medical Coordinator**: Specifically handles `critical` health states and urgency requests.
 3. **Field Worker**: Limited read/edit scope scoped to day-to-day operations.
 4. **Portal/Public**: Basic views for external reporting.

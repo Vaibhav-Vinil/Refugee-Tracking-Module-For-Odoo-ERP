@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
     <record id="ir_cron_refugee_low_stock" model="ir.cron">
-        <field name="name">RefugeeConnect: low inventory check</field>
+        <field name="name">Onwards: low inventory check</field>
         <field name="model_id" ref="refugee_crisis_erp.model_refugee_resource_inventory"/>
         <field name="state">code</field>
         <field name="code">model._cron_check_low_stock()</field>

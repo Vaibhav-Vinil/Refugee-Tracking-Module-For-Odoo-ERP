@@ -42,7 +42,7 @@
                                     </t>
                                 </td>
                                 <td style="width: 65%; vertical-align: top; padding-left: 8px;">
-                                    <div style="font-size: 8pt; color: #666;">RefugeeConnect</div>
+                                    <div style="font-size: 8pt; color: #666;">Onwards</div>
                                     <div style="font-size: 14pt; font-weight: bold;" t-out="o.name"/>
                                     <div style="font-size: 11pt; margin-top: 4px;"><span t-out="o.refugee_id"/></div>
                                     <t t-if="o.nationality_id">

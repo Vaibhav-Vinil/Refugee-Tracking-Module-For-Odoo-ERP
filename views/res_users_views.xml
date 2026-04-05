@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.view_users_form"/>
         <field name="arch" type="xml">
             <notebook position="inside">
-                <page string="RefugeeConnect Profiles">
+                <page string="Onwards Profiles">
                     <group>
                         <field name="refugee_profile_id" context="{'default_name': name}"/>
                         <field name="volunteer_id" context="{'default_name': name}"/>

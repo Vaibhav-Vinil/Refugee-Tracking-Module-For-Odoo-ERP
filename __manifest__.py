@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "RefugeeConnect — Humanitarian Suite",
+    "name": "Onwards",
     "version": "19.0.1.0.1",
     "category": "Services",
-    "summary": "Refugee profiles, camps, aid, logistics, and dashboards (RefugeeConnect / hackathon module).",
+    "summary": "Refugee profiles, camps, aid, logistics, and dashboards (Onwards / hackathon module).",
     "depends": ["mail", "portal", "web"],
     "license": "LGPL-3",
-    "author": "RefugeeConnect",
+    "author": "Onwards",
     "application": True,
     "data": [
         "security/refugee_security.xml",

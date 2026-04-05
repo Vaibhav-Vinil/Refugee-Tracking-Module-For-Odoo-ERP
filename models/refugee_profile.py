@@ -96,7 +96,7 @@ class RefugeeProfile(models.Model):
     id_number = fields.Char(string="Legacy ID / Paper ID")
     journey_stage = fields.Selection(
         selection=[
-            ("draft", "Draft — Border intake"),
+            ("draft", "Border intake"),
             ("vetting", "Vetting"),
             ("medical", "Medical"),
             ("assigned", "Assigned"),
