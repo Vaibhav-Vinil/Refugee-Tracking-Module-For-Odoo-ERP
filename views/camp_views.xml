@@ -6,9 +6,8 @@
         <field name="arch" type="xml">
             <list string="Camps &amp; Shelters">
                 <field name="name"/>
-                <field name="parent_id" optional="show"/>
                 <field name="total_capacity"/>
-                <field name="current_occupancy"/>
+                <field name="current_occupancy" widget="progressbar" options="{'max_value': 'total_capacity'}"/>
                 <field name="overcrowded_status" decoration-danger="overcrowded_status == 'overcrowded'"/>
                 <field name="latitude" optional="hide"/>
                 <field name="longitude" optional="hide"/>
@@ -24,12 +23,11 @@
                     <group>
                         <group>
                             <field name="name"/>
-                            <field name="parent_id"/>
                             <field name="location_label"/>
                         </group>
                         <group>
                             <field name="total_capacity"/>
-                            <field name="current_occupancy"/>
+                            <field name="current_occupancy" widget="progressbar" options="{'max_value': 'total_capacity'}"/>
                             <field name="overcrowded_status"/>
                             <field name="latitude"/>
                             <field name="longitude"/>
@@ -52,7 +50,7 @@
                                 <list>
                                     <field name="name"/>
                                     <field name="resource_type"/>
-                                    <field name="quantity_available" widget="progressbar" options="{'max_value': 'quantity_required'}"/>
+                                    <field name="quantity_available" widget="stock_progressbar" options="{'max_value': 'quantity_required'}"/>
                                     <field name="quantity_required" optional="hide"/>
                                     <field name="stock_ratio" optional="hide"/>
                                 </list>

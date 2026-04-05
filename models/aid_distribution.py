@@ -14,6 +14,15 @@ class RefugeeAidDistribution(models.Model):
         required=True,
         ondelete="restrict",
         index=True,
+        string="Beneficiary",
+    )
+    camp_id = fields.Many2one(
+        "refugee.camp.management",
+        string="Camp",
+        related="refugee_id.camp_id",
+        store=True,
+        readonly=True,
+        index=True,
     )
     resource_id = fields.Many2one(
         "refugee.resource.inventory",
@@ -35,6 +44,13 @@ class RefugeeAidDistribution(models.Model):
         default="delivered",
         tracking=True,
     )
+    notes = fields.Text("Delivery Notes")
+
+    def action_mark_delivered(self):
+        for rec in self:
+            if rec.status == 'pending':
+                rec.status = 'delivered'
+        return True
 
     @api.model_create_multi
     def create(self, vals_list):

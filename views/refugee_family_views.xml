@@ -25,11 +25,14 @@
                         <field name="camp_id"/>
                         <field name="status"/>
                         <field name="head_id"/>
+                        <field name="voluntary_separation" invisible="status != 'separated'"/>
+                        <field name="separation_notes" invisible="voluntary_separation == False"/>
                     </group>
                     <field name="member_ids">
                         <list>
                             <field name="refugee_id"/>
                             <field name="name"/>
+                            <field name="is_head_of_family" optional="show"/>
                             <field name="journey_stage"/>
                             <field name="camp_id"/>
                             <field name="deceased"/>
@@ -61,9 +64,28 @@
             </kanban>
         </field>
     </record>
+    <record id="view_refugee_family_graph" model="ir.ui.view">
+        <field name="name">refugee.family.graph</field>
+        <field name="model">refugee.family</field>
+        <field name="arch" type="xml">
+            <graph string="Families Analysis">
+                <field name="status"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_refugee_family_pivot" model="ir.ui.view">
+        <field name="name">refugee.family.pivot</field>
+        <field name="model">refugee.family</field>
+        <field name="arch" type="xml">
+            <pivot string="Families Analysis">
+                <field name="status" type="row"/>
+                <field name="camp_id" type="col"/>
+            </pivot>
+        </field>
+    </record>
     <record id="action_refugee_family" model="ir.actions.act_window">
         <field name="name">Families</field>
         <field name="res_model">refugee.family</field>
-        <field name="view_mode">kanban,list,form</field>
+        <field name="view_mode">kanban,list,form,graph,pivot</field>
     </record>
 </odoo>

@@ -7,19 +7,18 @@ class RefugeeCampManagement(models.Model):
     _name = "refugee.camp.management"
     _description = "Camp / Shelter Location"
     _inherit = ["mail.thread"]
-    _parent_name = "parent_id"
-    _parent_store = True
-    _order = "parent_path, name"
+    _order = "name"
 
     name = fields.Char(required=True, translate=True)
-    parent_id = fields.Many2one(
-        "refugee.camp.management",
-        string="Parent Location",
-        index=True,
-        ondelete="restrict",
-    )
-    parent_path = fields.Char(index=True)
-    child_ids = fields.One2many("refugee.camp.management", "parent_id", string="Child Locations")
+
+    def _compute_display_name(self):
+        super()._compute_display_name()
+        for rec in self:
+            if rec.name == 'Location Unknown':
+                rec.display_name = '𝗟𝗼𝗰𝗮𝘁𝗶𝗼𝗻 𝗨𝗻𝗸𝗻𝗼𝘄𝗻'
+            else:
+                rec.display_name = rec.name
+
     location_label = fields.Char(string="Address / Area")
     total_capacity = fields.Integer(string="Total Capacity", default=0)
     current_occupancy = fields.Integer(

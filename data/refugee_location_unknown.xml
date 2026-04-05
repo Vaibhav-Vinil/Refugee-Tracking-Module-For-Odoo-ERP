@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="camp_location_unknown" model="refugee.camp.management">
+            <field name="name">Location Unknown</field>
+            <field name="location_label">Reserved for families or persons with unknown or missing location</field>
+            <field name="total_capacity">0</field>
+        </record>
+    </data>
+</odoo>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "RefugeeConnect — Humanitarian Suite",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Services",
     "summary": "Refugee profiles, camps, aid, logistics, and dashboards (RefugeeConnect / hackathon module).",
     "depends": ["mail", "portal", "web"],
@@ -12,6 +12,7 @@
         "security/refugee_security.xml",
         "security/ir.model.access.csv",
         "data/refugee_sequence.xml",
+        "data/refugee_location_unknown.xml",
         "data/refugee_cron.xml",
         "views/refugee_skill_views.xml",
         "views/refugee_family_views.xml",
@@ -31,6 +32,8 @@
     "assets": {
         "web.assets_backend": [
             "refugee_crisis_erp/static/src/camp_map/camp_map.js",
+            "refugee_crisis_erp/static/src/fields/family_head_boolean_field.js",
+            "refugee_crisis_erp/static/src/fields/stock_progress_bar_field.js",
         ],
     },
     "installable": True,

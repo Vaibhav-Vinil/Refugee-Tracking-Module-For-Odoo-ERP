@@ -22,6 +22,7 @@ class RefugeeResourceInventory(models.Model):
     quantity_available = fields.Integer(string="Quantity Available", default=0)
     quantity_required = fields.Integer(string="Quantity Required", default=100)
     expiry_date = fields.Date()
+    expiry_not_applicable = fields.Boolean(string="Expiry Not Applicable", default=False)
     camp_id = fields.Many2one("refugee.camp.management", required=True, ondelete="cascade")
     stock_ratio = fields.Float(
         string="Stock fill (%)",

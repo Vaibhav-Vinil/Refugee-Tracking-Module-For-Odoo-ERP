@@ -8,7 +8,7 @@
                 <field name="name"/>
                 <field name="camp_id"/>
                 <field name="resource_type"/>
-                <field name="quantity_available" widget="progressbar" options="{'max_value': 'quantity_required'}"/>
+                <field name="quantity_available" widget="stock_progressbar" options="{'max_value': 'quantity_required'}"/>
                 <field name="quantity_required"/>
                 <field name="stock_ratio"/>
                 <field name="expiry_date" optional="show"/>
@@ -25,10 +25,11 @@
                         <field name="name"/>
                         <field name="camp_id"/>
                         <field name="resource_type"/>
-                        <field name="quantity_available" widget="progressbar" options="{'max_value': 'quantity_required'}"/>
+                        <field name="quantity_available" widget="stock_progressbar" options="{'max_value': 'quantity_required'}"/>
                         <field name="quantity_required"/>
                         <field name="stock_ratio" readonly="1"/>
-                        <field name="expiry_date"/>
+                        <field name="expiry_not_applicable"/>
+                        <field name="expiry_date" invisible="expiry_not_applicable == True"/>
                     </group>
                 </sheet>
                 <chatter/>
@@ -46,6 +47,10 @@
                 <separator/>
                 <filter string="Group by Camp" name="group_camp" context="{'group_by':'camp_id'}"/>
                 <filter string="Group by Type" name="group_type" context="{'group_by':'resource_type'}"/>
+                <searchpanel>
+                    <field name="camp_id" string="Name of camp" icon="fa-tent" enable_counters="1" select="multi"/>
+                    <field name="resource_type" string="Resource" icon="fa-cube" enable_counters="1" select="multi"/>
+                </searchpanel>
             </search>
         </field>
     </record>

@@ -1,7 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-Run the below line to create the seed data in the database.
-@"exec(open(r'Workshop/refugee_crisis_erp/seed_data_v2.py', encoding='utf-8').read())"@ | python odoo-bin shell -c odoo.conf -d YOUR_DATABASE_NAME
+Run from the Odoo server root (folder that contains odoo.conf and Workshop/).
+
+PowerShell — the opening '@ must be alone on its line (same for closing '@):
+
+    @'
+    exec(open(r'Workshop/refugee_crisis_erp/seed_data_v2.py', encoding='utf-8').read())
+    '@ | python odoo-bin shell -c odoo.conf -d admin
+
+Or start an interactive shell, then paste one line:
+
+    python odoo-bin shell -c odoo.conf -d admin
+    >>> exec(open(r'Workshop/refugee_crisis_erp/seed_data_v2.py', encoding='utf-8').read())
 """
 import random
 from datetime import timedelta, date, datetime
@@ -61,18 +71,27 @@ def generate_comprehensive_data(env):
         {'name': 'Epsilon Relief Point',   'total_capacity': 600,  'location_label': 'Western Highlands'},
     ]
     camps = [Camp.create(d) for d in camps_data]
-    print(f"  Created {len(camps)} camps.")
+    loc_unknown = Camp.search([("name", "=", "Location Unknown")], limit=1)
+    if not loc_unknown:
+        loc_unknown = Camp.create({
+            "name": "Location Unknown",
+            "location_label": "Reserved for unknown or missing location",
+            "total_capacity": 0,
+        })
+    print(f"  Created {len(camps)} camps (+ Location Unknown sentinel).")
 
     # ── 2. SKILLS ─────────────────────────────────────────────────────────────
     print("\n[2/8] Creating Skills...")
     skill_data = [
-        'Medical First Aid', 'Trauma Counselling', 'Arabic Translation',
-        'French Interpretation', 'Swahili Interpretation', 'Carpentry & Construction',
-        'Electrical Maintenance', 'Plumbing & Sanitation', 'Teaching & Childcare',
-        'Logistics & Driving', 'IT & Communications', 'Food Preparation',
-        'Legal Aid Awareness', 'Security & Protection',
+        ('Medical First Aid', 'medical'), ('Trauma Counselling', 'medical'), 
+        ('Arabic Translation', 'education'), ('French Interpretation', 'education'), 
+        ('Swahili Interpretation', 'education'), ('Carpentry & Construction', 'labor'),
+        ('Electrical Maintenance', 'labor'), ('Plumbing & Sanitation', 'labor'), 
+        ('Teaching & Childcare', 'education'), ('Logistics & Driving', 'logistics'), 
+        ('IT & Communications', 'logistics'), ('Food Preparation', 'labor'),
+        ('Legal Aid Awareness', 'education'), ('Security & Protection', 'logistics'),
     ]
-    skills = [Skill.create({'name': s}) for s in skill_data]
+    skills = [Skill.create({'name': name, 'category': cat}) for name, cat in skill_data]
     print(f"  Created {len(skills)} skills.")
 
     # ── 3. VOLUNTEER GROUPS & VOLUNTEERS ──────────────────────────────────────
@@ -179,7 +198,7 @@ def generate_comprehensive_data(env):
         for r_type, items in resource_catalog.items():
             for item_name, qty_avail, qty_req in items:
                 res = Resource.create({
-                    'name': f"{item_name} – {camp.name[:10]}",
+                    'name': f"{item_name}",
                     'resource_type': r_type,
                     'quantity_available': qty_avail,
                     'quantity_required': qty_req,
@@ -233,26 +252,26 @@ def generate_comprehensive_data(env):
 
     families_data = [
         # (family_name, camp_idx, status, member_count)
-        ('Al-Rashidi',   0, 'complete',  4),
-        ('Mensah',       1, 'complete',  3),
-        ('Diallo',       2, 'partial',   5),
-        ('Kovačević',    3, 'separated', 2),
-        ('Osei',         4, 'complete',  6),
-        ('Hassan',       0, 'partial',   3),
-        ('Nkosi',        1, 'complete',  4),
-        ('Petrov',       2, 'complete',  2),
+        ('Al-Rashidi',   0, 'reunited',  4),
+        ('Mensah',       1, 'reunited',  3),
+        ('Diallo',       2, 'reunited',  5),
+        ('Kovačević',    3, 'reunited',  2),
+        ('Osei',         4, 'reunited',  6),
+        ('Hassan',       0, 'reunited',  3),
+        ('Nkosi',        1, 'reunited',  4),
+        ('Petrov',       2, 'reunited',  2),
         ('Ouedraogo',    3, 'location_unknown', 1),
-        ('Santos',       4, 'complete',  5),
-        ('Khalil',       0, 'complete',  3),
-        ('Asante',       1, 'partial',   4),
-        ('Ben Ammar',    2, 'complete',  2),
-        ('Shankar',      3, 'complete',  3),
-        ('Fontaine',     4, 'separated', 2),
-        ('Mwangi',       0, 'complete',  4),
-        ('Saleh',        1, 'complete',  5),
-        ('Yilmaz',       2, 'partial',   3),
-        ('Abubakar',     3, 'complete',  6),
-        ('Nguyen',       4, 'complete',  3),
+        ('Santos',       4, 'reunited',  5),
+        ('Khalil',       0, 'reunited',  3),
+        ('Asante',       1, 'reunited',  4),
+        ('Ben Ammar',    2, 'reunited',  2),
+        ('Shankar',      3, 'reunited',  3),
+        ('Fontaine',     4, 'reunited',  2),
+        ('Mwangi',       0, 'reunited',  4),
+        ('Saleh',        1, 'reunited',  5),
+        ('Yilmaz',       2, 'reunited',  3),
+        ('Abubakar',     3, 'reunited',  6),
+        ('Nguyen',       4, 'reunited',  3),
     ]
 
     first_names_m = ['Ahmed', 'Mohamed', 'Yusuf', 'Ibrahim', 'Kwame', 'James', 'Carlos',
@@ -285,10 +304,11 @@ def generate_comprehensive_data(env):
 
         family = Family.create({
             'name': f"{fam_name} Family",
-            'camp_id': camp.id,
+            'camp_id': loc_unknown.id if status == 'location_unknown' else camp.id,
             'status': status,
         })
 
+        member_camp = loc_unknown if status == 'location_unknown' else camp
         for j in range(member_count):
             gender = 'male' if j % 2 == 0 else 'female'
             first_name = random.choice(first_names_m if gender == 'male' else first_names_f)
@@ -319,8 +339,7 @@ def generate_comprehensive_data(env):
                 'medical_conditions': random.choice(medical_conditions_pool),
                 'requires_urgent_care': requires_urgent,
                 'journey_stage': random.choice(['draft', 'vetting', 'medical', 'assigned', 'integrated']),
-                'registration_status': random.choice(['registered', 'assigned', 'relocated']),
-                'camp_id': camp.id,
+                'camp_id': member_camp.id,
                 'skill_ids': [(6, 0, [s.id for s in prof_skills])],
                 'deceased': False,
             })

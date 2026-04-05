@@ -6,11 +6,12 @@
         <field name="arch" type="xml">
             <list string="Aid Distribution">
                 <field name="date"/>
-                <field name="refugee_id"/>
+                <field name="camp_id"/>
                 <field name="resource_id"/>
                 <field name="distributed_by_id"/>
                 <field name="quantity"/>
                 <field name="status"/>
+                <button name="action_mark_delivered" string=" " type="object" icon="fa-check" invisible="status != 'pending'"/>
             </list>
         </field>
     </record>
@@ -22,20 +23,43 @@
                 <sheet>
                     <group>
                         <field name="refugee_id"/>
+                        <field name="camp_id"/>
                         <field name="resource_id"/>
                         <field name="distributed_by_id"/>
                         <field name="quantity"/>
                         <field name="date"/>
                         <field name="status"/>
+                        <field name="notes"/>
+                        <button name="action_mark_delivered" string="Delivered" type="object" icon="fa-check" invisible="status != 'pending'" class="oe_highlight"/>
                     </group>
                 </sheet>
                 <chatter/>
             </form>
         </field>
     </record>
+    <record id="view_refugee_aid_search" model="ir.ui.view">
+        <field name="name">refugee.aid.distribution.search</field>
+        <field name="model">refugee.aid.distribution</field>
+        <field name="arch" type="xml">
+            <search string="Aid Distribution">
+                <field name="camp_id"/>
+                <field name="refugee_id"/>
+                <field name="resource_id"/>
+                <field name="status"/>
+                <separator/>
+                <filter string="Delivered" name="delivered" domain="[('status', '=', 'delivered')]"/>
+                <filter string="Pending" name="pending" domain="[('status', '=', 'pending')]"/>
+                <group>
+                    <filter string="Camp" name="group_camp" context="{'group_by': 'camp_id'}"/>
+                    <filter string="Resource" name="group_resource" context="{'group_by': 'resource_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
     <record id="action_refugee_aid" model="ir.actions.act_window">
         <field name="name">Aid Distribution</field>
         <field name="res_model">refugee.aid.distribution</field>
         <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_refugee_aid_search"/>
     </record>
 </odoo>

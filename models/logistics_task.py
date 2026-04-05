@@ -28,6 +28,8 @@ class RefugeeLogisticsTask(models.Model):
             ("todo", "To Do"),
             ("in_progress", "In Progress"),
             ("done", "Done"),
+            ("cancelled", "Cancelled"),
+            ("stopped", "Stopped Abruptly"),
         ],
         default="todo",
         tracking=True,
@@ -40,3 +42,19 @@ class RefugeeLogisticsTask(models.Model):
     resource_id = fields.Many2one("refugee.resource.inventory", ondelete="set null")
     source_location = fields.Char()
     destination = fields.Char()
+
+    def action_tick(self):
+        for rec in self:
+            if rec.status == 'todo':
+                rec.status = 'in_progress'
+            elif rec.status == 'in_progress':
+                rec.status = 'done'
+        return True
+
+    def action_cross(self):
+        for rec in self:
+            if rec.status == 'todo':
+                rec.status = 'cancelled'
+            elif rec.status == 'in_progress':
+                rec.status = 'stopped'
+        return True

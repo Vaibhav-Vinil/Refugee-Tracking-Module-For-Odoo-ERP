@@ -9,6 +9,8 @@
                 <field name="task_type"/>
                 <field name="volunteer_ids" widget="many2many_tags"/>
                 <field name="status"/>
+                <button name="action_tick" type="object" icon="fa-check" string=" " invisible="status in ('done', 'cancelled', 'stopped')"/>
+                <button name="action_cross" type="object" icon="fa-times" string=" " invisible="status in ('done', 'cancelled', 'stopped')"/>
                 <field name="priority"/>
             </list>
         </field>
@@ -19,18 +21,30 @@
         <field name="arch" type="xml">
             <form string="Logistics Task">
                 <header>
+                    <button name="action_tick" type="object" string="Next Stage" icon="fa-check" invisible="status in ('done', 'cancelled', 'stopped')" class="oe_highlight"/>
+                    <button name="action_cross" type="object" string="Cancel/Stop" icon="fa-times" invisible="status in ('done', 'cancelled', 'stopped')"/>
                     <field name="status" widget="statusbar" statusbar_visible="todo,in_progress,done"/>
                 </header>
                 <sheet>
                     <group>
                         <field name="name"/>
                         <field name="task_type"/>
-                        <field name="volunteer_ids" widget="many2many_tags"/>
                         <field name="priority"/>
                         <field name="resource_id"/>
                         <field name="source_location"/>
                         <field name="destination"/>
                     </group>
+                    <notebook>
+                        <page string="Assigned Volunteers">
+                            <field name="volunteer_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="status"/>
+                                    <field name="phone"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
                 <chatter/>
             </form>

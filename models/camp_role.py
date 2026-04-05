@@ -27,4 +27,5 @@ class RefugeeCampRole(models.Model):
                 lambda p: p.active and not p.deceased
             )
             role.assigned_count = len(assigned)
-            role.has_capacity = role.assigned_count < role.capacity
+            # capacity 0 means no fixed limit (still open for assignment)
+            role.has_capacity = (not role.capacity) or (role.assigned_count < role.capacity)

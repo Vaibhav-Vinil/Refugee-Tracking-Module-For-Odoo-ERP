@@ -90,6 +90,7 @@
                             <field name="id_number"/>
                         </group>
                         <group string="Camp" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical,refugee_crisis_erp.group_refugee_field_worker">
+                            <field name="family_status" invisible="not family_id"/>
                             <field name="camp_id"/>
                         </group>
                     </group>
@@ -105,7 +106,6 @@
                         </page>
                         <page string="Journey" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical">
                             <group>
-                                <field name="registration_status"/>
                                 <field name="journey_stage"/>
                             </group>
                         </page>
@@ -130,7 +130,7 @@
                                 <field name="family_name"/>
                                 <field name="family_id"/>
                                 <field name="is_head_of_household"/>
-                                <field name="is_head_of_family"/>
+                                <field name="is_head_of_family" widget="family_head_boolean"/>
                             </group>
                         </page>
                         <page string="Aid &amp; Distribution" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical,refugee_crisis_erp.group_refugee_field_worker">

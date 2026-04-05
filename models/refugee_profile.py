@@ -6,6 +6,7 @@ import io
 import logging
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -43,6 +44,17 @@ class RefugeeProfile(models.Model):
     languages_spoken_ids = fields.Many2many("res.lang", string="Languages Spoken")
 
     family_id = fields.Many2one("refugee.family", string="Family", ondelete="set null", tracking=True)
+    family_head_of_ids = fields.One2many(
+        "refugee.family",
+        "head_id",
+        string="Family as head of",
+        help="One-to-one link: at most one family may have this profile as head (see unique constraint on family.head_id).",
+    )
+    family_status = fields.Selection(
+        related="family_id.status",
+        string="Family location category",
+        readonly=True,
+    )
     is_head_of_household = fields.Boolean(string="Head of Household")
     is_head_of_family = fields.Boolean(string="Head of Family")
     camp_id = fields.Many2one(
@@ -56,7 +68,7 @@ class RefugeeProfile(models.Model):
     assigned_role_id = fields.Many2one(
         "refugee.camp.role",
         string="Assigned Role",
-        domain="[('camp_id', '=', camp_id)]",
+        domain="['&', ('camp_id', '=', camp_id), '|', ('capacity', '=', 0), ('has_capacity', '=', True)]",
         tracking=True,
     )
 
@@ -73,15 +85,7 @@ class RefugeeProfile(models.Model):
         tracking=True,
         group_expand=True,
     )
-    registration_status = fields.Selection(
-        selection=[
-            ("registered", "Registered"),
-            ("assigned", "Assigned"),
-            ("relocated", "Relocated"),
-        ],
-        default="registered",
-        tracking=True,
-    )
+
 
     vulnerability_level = fields.Selection(
         selection=[
@@ -117,6 +121,45 @@ class RefugeeProfile(models.Model):
     aid_line_ids = fields.One2many("refugee.aid.distribution", "refugee_id", string="Aid Lines")
     aid_count = fields.Integer(compute="_compute_counts")
     family_member_count = fields.Integer(compute="_compute_counts")
+
+    @api.model
+    def _location_unknown_camp(self):
+        return self.env.ref("refugee_crisis_erp.camp_location_unknown", raise_if_not_found=False)
+
+    @api.model
+    def get_family_head_change_prompt(self, profile_id=0, family_id=0, profile_name=""):
+        """Used by the UI to confirm replacing the family head (public for RPC)."""
+        Family = self.env["refugee.family"]
+        profile_id = int(profile_id or 0)
+        family_id = int(family_id or 0)
+        new_name = (profile_name or "").strip()
+        family = Family.browse()
+        if profile_id:
+            profile = self.browse(profile_id)
+            if profile.exists():
+                family = profile.family_id
+                new_name = profile.name or new_name
+        elif family_id:
+            family = Family.browse(family_id)
+        if not family or not family.exists():
+            return {"need_confirm": False}
+        head = family.head_id
+        if not head:
+            return {"need_confirm": False}
+        if profile_id and head.id == profile_id:
+            return {"need_confirm": False}
+        return {
+            "need_confirm": True,
+            "message": _(
+                "You are changing the head of the family from %(old)s to %(new)s. "
+                "Are you sure you want to proceed?"
+            )
+            % {"old": head.name, "new": new_name or _("(new member)")},
+        }
+
+    @api.constrains("camp_id", "family_id")
+    def _check_family_location_unknown_camp(self):
+        pass  # removed constraint to allow setting other camps when found
 
     @api.depends("date_of_birth")
     def _compute_age(self):
@@ -188,17 +231,27 @@ class RefugeeProfile(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         Family = self.env["refugee.family"]
+        out_vals = []
         for vals in vals_list:
+            vals = dict(vals)
             if vals.get("family_name") and not vals.get("family_id"):
                 family = Family.search([("name", "=", vals["family_name"])], limit=1)
                 if not family:
                     family = Family.create({"name": vals["family_name"]})
                 vals["family_id"] = family.id
+            if vals.get("family_id"):
+                fam = Family.browse(vals["family_id"])
+                loc = self._location_unknown_camp()
+                if fam.exists() and fam.status == "location_unknown" and loc:
+                    vals["camp_id"] = loc.id
             if not vals.get("refugee_id"):
                 vals["refugee_id"] = self.env["ir.sequence"].next_by_code("refugee.profile.id")
             if vals.get("deceased"):
                 vals["assigned_role_id"] = False
-        records = super().create(vals_list)
+                vals["is_head_of_family"] = False
+                vals["is_head_of_household"] = False
+            out_vals.append(vals)
+        records = super().create(out_vals)
         records._sync_family_head()
         for rec in records:
             if rec.requires_urgent_care:
@@ -206,24 +259,44 @@ class RefugeeProfile(models.Model):
         return records
 
     def write(self, vals):
+        vals = dict(vals)
         notify_candidates = self.env["refugee.profile"]
         if vals.get("requires_urgent_care"):
             notify_candidates = self.filtered(lambda r: not r.requires_urgent_care)
-        
-        if vals.get("family_name") and not vals.get("family_id") and not self.mapped('family_id'):
+
+        if vals.get("family_name") and not vals.get("family_id") and not self.mapped("family_id"):
             Family = self.env["refugee.family"]
             family = Family.search([("name", "=", vals["family_name"])], limit=1)
             if not family:
                 family = Family.create({"name": vals["family_name"]})
             vals["family_id"] = family.id
 
-        if vals.get("deceased"):
-            vals = dict(vals)
-            if vals["deceased"]:
-                vals["assigned_role_id"] = False
+        needs_head_successor = self.env["refugee.profile"]
+        if vals.get("deceased") is True:
+            for rec in self:
+                if not rec.deceased and rec.family_id and (
+                    rec.is_head_of_family
+                    or rec.is_head_of_household
+                    or rec.family_id.head_id == rec
+                ):
+                    needs_head_successor |= rec
+            vals["assigned_role_id"] = False
+            vals["is_head_of_family"] = False
+            vals["is_head_of_household"] = False
+
+        if vals.get("family_id"):
+            fam = self.env["refugee.family"].browse(vals["family_id"])
+            loc = self._location_unknown_camp()
+            if fam.exists() and fam.status == "location_unknown" and loc:
+                vals["camp_id"] = loc.id
 
         res = super().write(vals)
-        if any(k in vals for k in ("is_head_of_family", "family_id", "is_head_of_household")):
+        for rec in needs_head_successor:
+            rec._promote_oldest_family_head()
+        if any(
+            k in vals
+            for k in ("is_head_of_family", "family_id", "is_head_of_household", "deceased")
+        ):
             self._sync_family_head()
         if vals.get("requires_urgent_care"):
             for rec in notify_candidates:
@@ -258,10 +331,39 @@ class RefugeeProfile(models.Model):
 
     def _sync_family_head(self):
         for rec in self:
-            if not rec.family_id:
+            if not rec.family_id or rec.deceased:
                 continue
             if rec.is_head_of_family or rec.is_head_of_household:
-                rec.family_id.head_id = rec
+                others = rec.family_id.member_ids - rec
+                others = others.filtered(lambda m: m.active and not m.deceased)
+                if others:
+                    others.write({"is_head_of_family": False, "is_head_of_household": False})
+                fam = rec.family_id
+                if fam.head_id != rec:
+                    fam.with_context(refugee_syncing_head_from_profile=True).write(
+                        {"head_id": rec.id}
+                    )
+
+    def _promote_oldest_family_head(self):
+        self.ensure_one()
+        fam = self.family_id
+        if not fam:
+            return
+        living = fam.member_ids.filtered(lambda m: m.active and not m.deceased)
+        if not living:
+            fam.with_context(refugee_syncing_head_from_profile=True).write({"head_id": False})
+            return
+        far_future = fields.Date.from_string("2099-12-31")
+
+        def sort_key(m):
+            return (m.date_of_birth or far_future, m.id)
+
+        successor = min(living, key=sort_key)
+        successor.write({"is_head_of_family": True, "is_head_of_household": True})
+
+    @api.onchange("family_id")
+    def _onchange_family_id_location_unknown(self):
+        pass  # removed to prevent resetting the camp_id back to unknown
 
     def action_open_family_members(self):
         self.ensure_one()
