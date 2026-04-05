@@ -54,11 +54,12 @@ class RefugeeResourceInventory(models.Model):
                     ], limit=1)
                     if not existing_task:
                         task_vals = {
-                            "name": f"Emergency Resupply: {rec.name}",
                             "task_type": "delivery",
                             "priority": "3",
                             "resource_id": rec.id,
+                            "camp_id": rec.camp_id.id,
                             "destination": rec.camp_id.name,
+                            "notes": f"Emergency Resupply: {rec.name} is critically low.",
                         }
                         self.env["refugee.logistics.task"].create(task_vals)
         return res

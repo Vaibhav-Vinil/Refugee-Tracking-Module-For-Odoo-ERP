@@ -395,32 +395,33 @@ def generate_comprehensive_data(env):
     # ── 8. MANUAL LOGISTICS TASKS (non-auto-triggered ones) ───────────────────
     print("\n[8/8] Creating manual Logistics Tasks...")
     task_templates = [
-        ('Medical supply convoy to Alpha North',   'delivery',   '3', 0, 4),
-        ('Tent installation – Delta Family Camp',  'setup',      '2', 3, 3),
-        ('Food distribution run – Gamma Centre',   'delivery',   '2', 2, 2),
-        ('Generator maintenance – Beta Hub',       'setup',      '1', 1, 1),
-        ('Blanket transport – Epsilon Relief',     'transport',  '2', 4, 4),
-        ('Water jerrycan pickup – Alpha North',    'transport',  '3', 0, 3),
-        ('School kit delivery – Delta Camp',       'delivery',   '1', 3, 1),
-        ('Solar lantern installation – Gamma',     'setup',      '1', 2, 2),
-        ('Family reunification transport run',     'transport',  '3', 1, 4),
-        ('Medical waste disposal – Alpha North',   'transport',  '2', 0, 0),
+        ('delivery',   '3', 0, 4),
+        ('setup',      '2', 3, 3),
+        ('delivery',   '2', 2, 2),
+        ('setup',      '1', 1, 1),
+        ('transport',  '2', 4, 4),
+        ('transport',  '3', 0, 3),
+        ('delivery',   '1', 3, 1),
+        ('setup',      '1', 2, 2),
+        ('transport',  '3', 1, 4),
+        ('transport',  '2', 0, 0),
     ]
 
     status_options = ['todo', 'in_progress', 'done']
     manual_tasks = []
-    for task_name, t_type, priority, camp_idx, volunteer_offset in task_templates:
+    for t_type, priority, camp_idx, volunteer_offset in task_templates:
         camp_res = [r for r in resources if r.camp_id.id == camps[camp_idx].id]
         chosen_res = random.choice(camp_res) if camp_res else random.choice(resources)
         num_vols = random.randint(1, 3)
         assigned_vols = volunteers[volunteer_offset:volunteer_offset + num_vols]
 
         t = Task.create({
-            'name': task_name,
             'task_type': t_type,
             'priority': priority,
             'status': random.choice(status_options),
             'resource_id': chosen_res.id,
+            'camp_id': camps[camp_idx].id,
+            'quantity': random.randint(5, 50),
             'source_location': camps[(camp_idx + 1) % len(camps)].name,
             'destination': camps[camp_idx].name,
             'volunteer_ids': [(6, 0, [v.id for v in assigned_vols])],
@@ -428,7 +429,7 @@ def generate_comprehensive_data(env):
         manual_tasks.append(t)
 
     # Count auto-created tasks from low stock
-    auto_tasks = Task.search([('name', 'like', 'Emergency Resupply')])
+    auto_tasks = Task.search([('notes', 'like', 'Emergency Resupply')])
     print(f"  Created {len(manual_tasks)} manual logistics tasks.")
     print(f"  * {len(auto_tasks)} emergency resupply tasks were AUTO-CREATED by low-stock triggers.")
 

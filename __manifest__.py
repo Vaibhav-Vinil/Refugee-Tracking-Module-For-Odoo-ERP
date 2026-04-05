@@ -21,9 +21,11 @@
         "views/resource_views.xml",
         "views/aid_views.xml",
         "views/logistics_views.xml",
+        "views/resource_request_views.xml",
         "views/refugee_profile_views.xml",
         "views/refugee_menus.xml",
         "views/volunteer_views.xml",
+        "views/res_users_views.xml",
         "report/refugee_reports.xml",
     ],
     "demo": [

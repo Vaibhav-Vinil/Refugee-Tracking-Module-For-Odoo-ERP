@@ -8,4 +8,6 @@ from . import refugee_profile
 from . import resource_inventory
 from . import aid_distribution
 from . import logistics_task
+from . import resource_request
 from . import volunteer
+from . import res_users

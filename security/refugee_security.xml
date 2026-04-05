@@ -7,22 +7,126 @@
     </record>
 
     <record id="group_refugee_manager" model="res.groups">
-        <field name="name">Manager</field>
+        <field name="name">Admin</field>
         <field name="sequence">10</field>
         <field name="privilege_id" ref="res_groups_privilege_refugeeconnect"/>
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
-    <record id="group_refugee_field_worker" model="res.groups">
-        <field name="name">Field Worker</field>
+
+    <record id="group_refugee_volunteer" model="res.groups">
+        <field name="name">Volunteer</field>
         <field name="sequence">20</field>
         <field name="privilege_id" ref="res_groups_privilege_refugeeconnect"/>
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
     </record>
-    <record id="group_refugee_medical" model="res.groups">
-        <field name="name">Medical Coordinator</field>
+
+    <record id="group_refugee_camp_in_charge" model="res.groups">
+        <field name="name">Camp In Charge</field>
         <field name="sequence">30</field>
         <field name="privilege_id" ref="res_groups_privilege_refugeeconnect"/>
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_refugee" model="res.groups">
+        <field name="name">Refugee</field>
+        <field name="sequence">40</field>
+        <field name="privilege_id" ref="res_groups_privilege_refugeeconnect"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Record Rules -->
+    <record id="rule_resource_inventory_cinc" model="ir.rule">
+        <field name="name">Camp In Charge: See own camp inventory only</field>
+        <field name="model_id" ref="model_refugee_resource_inventory"/>
+        <field name="domain_force">[('camp_id', '=', user.refugee_profile_id.camp_id.id)]</field>
+        <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee_camp_in_charge'))]"/>
+    </record>
+
+    <record id="rule_resource_request_cinc" model="ir.rule">
+        <field name="name">Camp In Charge: Request only for own camp</field>
+        <field name="model_id" ref="model_refugee_resource_request"/>
+        <field name="domain_force">[('camp_id', '=', user.refugee_profile_id.camp_id.id)]</field>
+        <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee_camp_in_charge'))]"/>
+    </record>
+
+    <record id="rule_resource_request_volunteer" model="ir.rule">
+        <field name="name">Volunteers and Admins see all requests</field>
+        <field name="model_id" ref="model_refugee_resource_request"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee_volunteer')), (4, ref('refugee_crisis_erp.group_refugee_manager'))]"/>
+    </record>
+
+    <record id="rule_resource_inventory_volunteer" model="ir.rule">
+        <field name="name">Volunteers and Admins see all inventory</field>
+        <field name="model_id" ref="model_refugee_resource_inventory"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee_volunteer')), (4, ref('refugee_crisis_erp.group_refugee_manager'))]"/>
+    </record>
+
+    <record id="rule_profile_cinc" model="ir.rule">
+        <field name="name">Camp In Charge: See own camp profiles</field>
+        <field name="model_id" ref="model_refugee_profile"/>
+        <field name="domain_force">[('camp_id', '=', user.refugee_profile_id.camp_id.id)]</field>
+        <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee_camp_in_charge'))]"/>
+    </record>
+
+    <record id="rule_profile_volunteer" model="ir.rule">
+        <field name="name">Volunteers and Admins see all profiles</field>
+        <field name="model_id" ref="model_refugee_profile"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee_volunteer')), (4, ref('refugee_crisis_erp.group_refugee_manager'))]"/>
+    </record>
+
+    <record id="rule_family_volunteer" model="ir.rule">
+        <field name="name">Volunteers and Admins see all families</field>
+        <field name="model_id" ref="model_refugee_family"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee_volunteer')), (4, ref('refugee_crisis_erp.group_refugee_manager'))]"/>
+    </record>
+
+    <!-- Refugee role: see only own camp resources, but all families -->
+    <record id="rule_resource_inventory_refugee" model="ir.rule">
+        <field name="name">Refugee: See own camp inventory only</field>
+        <field name="model_id" ref="model_refugee_resource_inventory"/>
+        <field name="domain_force">[('camp_id', '=', user.refugee_profile_id.camp_id.id)]</field>
+        <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee'))]"/>
+    </record>
+
+    <record id="rule_family_refugee" model="ir.rule">
+        <field name="name">Refugee: See all families (no camp restriction)</field>
+        <field name="model_id" ref="model_refugee_family"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee'))]"/>
+    </record>
+
+    <record id="rule_profile_refugee" model="ir.rule">
+        <field name="name">Refugee: See own camp profiles</field>
+        <field name="model_id" ref="model_refugee_profile"/>
+        <field name="domain_force">[('camp_id', '=', user.refugee_profile_id.camp_id.id)]</field>
+        <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee'))]"/>
+    </record>
+
+    <!-- Open family visibility to Camp In Charge (all camps — to track separated families) -->
+    <record id="rule_family_cinc_open" model="ir.rule">
+        <field name="name">Camp In Charge: See all families</field>
+        <field name="model_id" ref="model_refugee_family"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee_camp_in_charge'))]"/>
+    </record>
+
+    <!-- Logistics tasks: CIC can see tasks for their camp -->
+    <record id="rule_logistics_cinc" model="ir.rule">
+        <field name="name">Camp In Charge: See own camp logistics tasks</field>
+        <field name="model_id" ref="model_refugee_logistics_task"/>
+        <field name="domain_force">[('camp_id', '=', user.refugee_profile_id.camp_id.id)]</field>
+        <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee_camp_in_charge'))]"/>
+    </record>
+
+    <record id="rule_logistics_volunteer" model="ir.rule">
+        <field name="name">Volunteers and Admins see all logistics tasks</field>
+        <field name="model_id" ref="model_refugee_logistics_task"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee_volunteer')), (4, ref('refugee_crisis_erp.group_refugee_manager'))]"/>
     </record>
 </odoo>

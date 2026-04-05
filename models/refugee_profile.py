@@ -72,6 +72,27 @@ class RefugeeProfile(models.Model):
         tracking=True,
     )
 
+    user_id = fields.Many2one('res.users', string='Related User Account', compute='_compute_user_id', store=True)
+    is_my_camp_profile = fields.Boolean(compute='_compute_is_my_camp_profile', string='Is in my camp', search='_search_is_my_camp_profile')
+
+    @api.depends('name')
+    def _compute_user_id(self):
+        for profile in self:
+            user = self.env['res.users'].search([('refugee_profile_id', '=', profile.id)], limit=1)
+            profile.user_id = user.id if user else False
+
+    def _compute_is_my_camp_profile(self):
+        for rec in self:
+            rec.is_my_camp_profile = (rec.camp_id == self.env.user.refugee_profile_id.camp_id)
+
+    def _search_is_my_camp_profile(self, operator, value):
+        profile = self.env.user.refugee_profile_id
+        camp_id = profile.camp_id.id if profile and profile.camp_id else False
+        if value and operator == '=' and camp_id:
+            return [('camp_id', '=', camp_id)]
+        return []
+
+
     id_number = fields.Char(string="Legacy ID / Paper ID")
     journey_stage = fields.Selection(
         selection=[
@@ -239,11 +260,7 @@ class RefugeeProfile(models.Model):
                 if not family:
                     family = Family.create({"name": vals["family_name"]})
                 vals["family_id"] = family.id
-            if vals.get("family_id"):
-                fam = Family.browse(vals["family_id"])
-                loc = self._location_unknown_camp()
-                if fam.exists() and fam.status == "location_unknown" and loc:
-                    vals["camp_id"] = loc.id
+
             if not vals.get("refugee_id"):
                 vals["refugee_id"] = self.env["ir.sequence"].next_by_code("refugee.profile.id")
             if vals.get("deceased"):
@@ -284,11 +301,7 @@ class RefugeeProfile(models.Model):
             vals["is_head_of_family"] = False
             vals["is_head_of_household"] = False
 
-        if vals.get("family_id"):
-            fam = self.env["refugee.family"].browse(vals["family_id"])
-            loc = self._location_unknown_camp()
-            if fam.exists() and fam.status == "location_unknown" and loc:
-                vals["camp_id"] = loc.id
+
 
         res = super().write(vals)
         for rec in needs_head_successor:

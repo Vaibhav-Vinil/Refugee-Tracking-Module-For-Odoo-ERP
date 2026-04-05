@@ -7,4 +7,13 @@
         <field name="padding">4</field>
         <field name="company_id" eval="False"/>
     </record>
+
+    <!-- SEQUENCE FOR RESOURCE REQUESTS -->
+    <record id="seq_refugee_resource_request" model="ir.sequence">
+        <field name="name">Resource Request</field>
+        <field name="code">refugee.resource.request</field>
+        <field name="prefix">REQ/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
 </odoo>

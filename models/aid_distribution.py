@@ -58,19 +58,20 @@ class RefugeeAidDistribution(models.Model):
             if "quantity" in vals and vals["quantity"] is not None:
                 vals["quantity"] = int(vals["quantity"])
         records = super().create(vals_list)
-        for rec in records:
-            if rec.status == "delivered" and rec.resource_id:
-                rec.resource_id.quantity_available += rec.quantity
+        # Inventory update moved to refugee.logistics.task
+        # for rec in records:
+        #     if rec.status == "delivered" and rec.resource_id:
+        #         rec.resource_id.quantity_available += rec.quantity
         return records
 
     def write(self, vals):
         if "quantity" in vals and vals["quantity"] is not None:
             vals = dict(vals)
             vals["quantity"] = int(vals["quantity"])
-        # Optional: handle transition to "delivered"
-        for rec in self:
-            old_status = rec.status
-            if vals.get("status") == "delivered" and old_status != "delivered":
-                if rec.resource_id:
-                    rec.resource_id.quantity_available += rec.quantity
+        # Inventory update moved to refugee.logistics.task
+        # for rec in self:
+        #     old_status = rec.status
+        #     if vals.get("status") == "delivered" and old_status != "delivered":
+        #         if rec.resource_id:
+        #             rec.resource_id.quantity_available += rec.quantity
         return super().write(vals)

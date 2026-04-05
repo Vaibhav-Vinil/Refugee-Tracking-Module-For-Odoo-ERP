@@ -57,7 +57,7 @@
 
     <menuitem id="menu_refugee_volunteers" name="Volunteers" parent="menu_refugee_root" sequence="85"
         action="action_refugee_volunteer"
-        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_field_worker"/>
+        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer"/>
         
     <menuitem id="menu_refugee_volunteer_groups" name="Volunteer Groups" parent="menu_refugee_root" sequence="86"
         action="action_refugee_volunteer_group"

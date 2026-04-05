@@ -15,6 +15,8 @@
                 <filter name="filter_urgent" string="Urgent care" domain="[('requires_urgent_care', '=', True)]"/>
                 <filter name="filter_critical" string="Critical vulnerability" domain="[('vulnerability_level', '=', 'critical')]"/>
                 <separator/>
+                <filter name="filter_my_camp" string="My Camp" domain="[('is_my_camp_profile', '=', True)]"/>
+                <separator/>
                 <filter name="filter_draft" string="Draft" domain="[('journey_stage', '=', 'draft')]"/>
                 <filter name="filter_assigned" string="Assigned" domain="[('journey_stage', '=', 'assigned')]"/>
                 <group>
@@ -57,13 +59,13 @@
                         groups="refugee_crisis_erp.group_refugee_manager"/>
                     <field name="journey_stage" widget="statusbar"
                         statusbar_visible="draft,vetting,medical,assigned,integrated"
-                        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical"/>
+                        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_open_family_members" type="object" class="oe_stat_button" icon="fa-users"
                             invisible="not family_id"
-                            groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical">
+                            groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer">
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Family</span>
                                 <span class="o_stat_value"><field name="family_member_count"/></span>
@@ -78,24 +80,24 @@
 
                     </div>
                     <field name="id_card_photo" widget="image" class="oe_avatar" options="{'preview_image': 'id_card_photo'}"
-                        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical"/>
+                        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer"/>
                     <div class="oe_title">
                         <label for="name"/>
                         <h1><field name="name" placeholder="Full name"/></h1>
                         <h3><field name="refugee_id" readonly="1"/></h3>
                     </div>
                     <group>
-                        <group string="Identification" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical">
+                        <group string="Identification" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer">
                             <field name="fingerprint_hash" readonly="1"/>
                             <field name="id_number"/>
                         </group>
-                        <group string="Camp" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical,refugee_crisis_erp.group_refugee_field_worker">
+                        <group string="Camp" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer">
                             <field name="family_status" invisible="not family_id"/>
                             <field name="camp_id"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Personal" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical">
+                        <page string="Personal" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer">
                             <group>
                                 <field name="gender"/>
                                 <field name="date_of_birth"/>
@@ -104,12 +106,12 @@
                                 <field name="languages_spoken_ids" widget="many2many_tags"/>
                             </group>
                         </page>
-                        <page string="Journey" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical">
+                        <page string="Journey" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer">
                             <group>
                                 <field name="journey_stage"/>
                             </group>
                         </page>
-                        <page string="Vulnerability &amp; Health" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical">
+                        <page string="Vulnerability &amp; Health" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer">
                             <group>
                                 <field name="vulnerability_level"/>
                                 <field name="is_unaccompanied_minor"/>
@@ -119,13 +121,13 @@
                                 <field name="deceased"/>
                             </group>
                         </page>
-                        <page string="Skills &amp; Role" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical">
+                        <page string="Skills &amp; Role" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer">
                             <group>
                                 <field name="skill_ids" widget="many2many_tags"/>
                                 <field name="assigned_role_id"/>
                             </group>
                         </page>
-                        <page string="Family" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical">
+                        <page string="Family" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer">
                             <group>
                                 <field name="family_name"/>
                                 <field name="family_id"/>
@@ -133,7 +135,7 @@
                                 <field name="is_head_of_family" widget="family_head_boolean"/>
                             </group>
                         </page>
-                        <page string="Aid &amp; Distribution" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical,refugee_crisis_erp.group_refugee_field_worker">
+                        <page string="Aid &amp; Distribution" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer">
                             <field name="aid_line_ids">
                                 <list editable="bottom">
                                     <field name="date"/>
@@ -145,7 +147,7 @@
                         </page>
                     </notebook>
                 </sheet>
-                <chatter groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical"/>
+                <chatter groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer"/>
             </form>
         </field>
     </record>
@@ -215,6 +217,7 @@
         <field name="res_model">refugee.profile</field>
         <field name="view_mode">kanban,list,form,graph,pivot</field>
         <field name="search_view_id" ref="view_refugee_profile_search"/>
+        <field name="context">{'search_default_filter_my_camp': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Register a refugee profile to start the journey.</p>
         </field>

@@ -55,11 +55,6 @@ class RefugeeFamily(models.Model):
                     conflicts.write({"head_id": False})
             out_vals.append(v)
         records = super().create(out_vals)
-        loc = self.env.ref("refugee_crisis_erp.camp_location_unknown", raise_if_not_found=False)
-        if loc:
-            for fam, vals in zip(records, out_vals):
-                if vals.get("status") == "location_unknown" and fam.member_ids:
-                    fam.member_ids.write({"camp_id": loc.id})
         return records
 
     def write(self, vals):
@@ -86,12 +81,6 @@ class RefugeeFamily(models.Model):
                     prev.write({"is_head_of_family": False, "is_head_of_household": False})
                 if fam.head_id:
                     fam.head_id.write({"is_head_of_family": True, "is_head_of_household": True})
-        if vals.get("status") == "location_unknown":
-            loc = self.env.ref("refugee_crisis_erp.camp_location_unknown", raise_if_not_found=False)
-            if loc:
-                for fam in self:
-                    if fam.member_ids:
-                        fam.member_ids.write({"camp_id": loc.id})
         return res
 
     @api.depends("member_ids.camp_id", "member_ids.active", "member_ids.deceased")
@@ -100,9 +89,8 @@ class RefugeeFamily(models.Model):
         for rec in self:
             members = rec.member_ids.filtered(lambda m: m.active and not m.deceased)
             camps = members.mapped("camp_id")
-            if loc:
-                camps -= loc
-            if not camps and loc and loc in members.mapped("camp_id"):
+            
+            if loc and loc in camps:
                 rec.status = "location_unknown"
             elif len(camps) <= 1:
                 rec.status = "reunited"

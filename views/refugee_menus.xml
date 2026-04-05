@@ -6,19 +6,19 @@
     </record>
 
     <menuitem id="menu_refugee_root" name="RefugeeConnect" sequence="25"
-        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical,refugee_crisis_erp.group_refugee_field_worker"/>
+        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer,refugee_crisis_erp.group_refugee,refugee_crisis_erp.group_refugee_camp_in_charge"/>
 
     <menuitem id="menu_refugee_profiles" name="Refugees" parent="menu_refugee_root" sequence="10"
         action="action_refugee_profile"
-        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical"/>
+        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer,refugee_crisis_erp.group_refugee,refugee_crisis_erp.group_refugee_camp_in_charge"/>
 
     <menuitem id="menu_refugee_families" name="Families" parent="menu_refugee_root" sequence="20"
         action="action_refugee_family"
-        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical"/>
+        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer,refugee_crisis_erp.group_refugee,refugee_crisis_erp.group_refugee_camp_in_charge"/>
 
     <menuitem id="menu_refugee_camps" name="Camps" parent="menu_refugee_root" sequence="30"
         action="action_refugee_camp"
-        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical"/>
+        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer"/>
 
     <menuitem id="menu_refugee_roles" name="Camp Roles" parent="menu_refugee_root" sequence="40"
         action="action_refugee_camp_role"
@@ -28,27 +28,29 @@
         action="action_refugee_skill"
         groups="refugee_crisis_erp.group_refugee_manager"/>
 
-    <menuitem id="menu_refugee_aid" name="Aid Distribution" parent="menu_refugee_root" sequence="60"
-        action="action_refugee_aid"
-        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical,refugee_crisis_erp.group_refugee_field_worker"/>
+
 
     <menuitem id="menu_refugee_resources" name="Resources" parent="menu_refugee_root" sequence="70"
         action="action_refugee_resource"
-        groups="refugee_crisis_erp.group_refugee_manager"/>
+        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer,refugee_crisis_erp.group_refugee_camp_in_charge"/>
+
+    <menuitem id="menu_refugee_resource_requests" name="Resource Requests" parent="menu_refugee_root" sequence="75"
+        action="action_refugee_resource_request"
+        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer,refugee_crisis_erp.group_refugee_camp_in_charge"/>
 
     <menuitem id="menu_refugee_logistics" name="Logistics" parent="menu_refugee_root" sequence="80"
         action="action_refugee_logistics"
-        groups="refugee_crisis_erp.group_refugee_manager"/>
+        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer,refugee_crisis_erp.group_refugee_camp_in_charge"/>
 
     <menuitem id="menu_refugee_dashboard" name="Dashboard" parent="menu_refugee_root" sequence="5"
-        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical"/>
+        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer"/>
 
     <menuitem id="menu_refugee_dashboard_graph" name="Population Graph" parent="menu_refugee_dashboard" sequence="10"
-        action="action_refugee_profile_graph" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical"/>
+        action="action_refugee_profile_graph" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer"/>
 
     <menuitem id="menu_refugee_dashboard_pivot" name="Pivot" parent="menu_refugee_dashboard" sequence="20"
-        action="action_refugee_profile_pivot" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical"/>
+        action="action_refugee_profile_pivot" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer"/>
 
     <menuitem id="menu_refugee_dashboard_map" name="Camp Map" parent="menu_refugee_dashboard" sequence="30"
-        action="action_refugee_camp_map" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_medical"/>
+        action="action_refugee_camp_map" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer"/>
 </odoo>
