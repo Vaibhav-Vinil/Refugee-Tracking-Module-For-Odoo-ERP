@@ -23,6 +23,7 @@ def wipe_existing_data(env):
     models_to_clear = [
         'refugee.aid.distribution',
         'refugee.logistics.task',
+        'refugee.resource.request',
         'refugee.profile',
         'refugee.family',
         'refugee.camp.role',
