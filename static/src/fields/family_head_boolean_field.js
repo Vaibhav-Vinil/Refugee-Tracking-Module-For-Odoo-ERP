@@ -7,6 +7,11 @@ import { useService } from "@web/core/utils/hooks";
 import { BooleanField } from "@web/views/fields/boolean/boolean_field";
 import { booleanField } from "@web/views/fields/boolean/boolean_field";
 
+/**
+ * A custom boolean field widget that intercepts toggling the 'is_head_of_family' status.
+ * If toggled TRUE on a profile, it issues an ORM call to check if a conflict exists 
+ * (e.g. replacing an existing head). It prompts the user via a modal before succeeding.
+ */
 export class FamilyHeadBooleanField extends BooleanField {
     static template = "web.BooleanField";
 
@@ -16,6 +21,10 @@ export class FamilyHeadBooleanField extends BooleanField {
         this.orm = useService("orm");
     }
 
+    /**
+     * Intercepts UI changes. Halts direct propagation if switching to TRUE, 
+     * evaluating global family constraints iteratively via prompt checking function.
+     */
     async onChange(newValue) {
         if (!newValue) {
             super.onChange(newValue);

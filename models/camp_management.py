@@ -4,6 +4,10 @@ from odoo import api, fields, models
 
 
 class RefugeeCampManagement(models.Model):
+    """
+    Represents a physical geographical location acting as a refugee camp or shelter.
+    Maintains capacities, monitors overcrowding conditions, and anchors profiles and resources to physical instances.
+    """
     _name = "refugee.camp.management"
     _description = "Camp / Shelter Location"
     _inherit = ["mail.thread"]
@@ -12,6 +16,10 @@ class RefugeeCampManagement(models.Model):
     name = fields.Char(required=True, translate=True)
 
     def _compute_display_name(self):
+        """
+        Overrides display name behavior to provide visually distinct formatting 
+        if the camp is the special 'Location Unknown' sentinel record.
+        """
         super()._compute_display_name()
         for rec in self:
             if rec.name == 'Location Unknown':
@@ -41,6 +49,11 @@ class RefugeeCampManagement(models.Model):
 
     @api.depends("refugee_ids", "refugee_ids.active", "refugee_ids.deceased", "total_capacity")
     def _compute_occupancy_metrics(self):
+        """
+        Dynamically counts alive and active refugees bound to the camp,
+        comparing it against the `total_capacity` to determine if the camp is operating under
+        overcrowded conditions.
+        """
         for rec in self:
             count = len(
                 rec.refugee_ids.filtered(lambda p: p.active and not p.deceased)

@@ -4,6 +4,11 @@ from odoo import api, fields, models
 
 
 class RefugeeFamily(models.Model):
+    """
+    Represents a group of refugee profiles making up a family unit.
+    Provides tracking of head of family assignments, computes grouping status 
+    (separated, reunited, etc.), and enforces logical constraints across members.
+    """
     _name = "refugee.family"
     _description = "Refugee Family Group"
     _order = "name"
@@ -46,6 +51,11 @@ class RefugeeFamily(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        """
+        Overrides default creation to strictly enforce unique head of family. 
+        If a designated head is assigned that already heads another family, 
+        they are systematically unlinked from the old family.
+        """
         out_vals = []
         for vals in vals_list:
             v = dict(vals)
@@ -58,6 +68,10 @@ class RefugeeFamily(models.Model):
         return records
 
     def write(self, vals):
+        """
+        Overrides default write to manage head of family bidirectional 
+        synchronization, while passing contexts to avoid infinite recursion.
+        """
         vals = dict(vals)
         # When profile._sync_family_head updates head_id, skip writing back to profiles
         # (avoids infinite recursion: family.write → profile.write → _sync → family.write).
@@ -85,6 +99,12 @@ class RefugeeFamily(models.Model):
 
     @api.depends("member_ids.camp_id", "member_ids.active", "member_ids.deceased")
     def _compute_family_status(self):
+        """
+        Dynamically computes the geographic integrity of the family unit.
+        - 'location_unknown' if any active member's camp is strictly the designated unknown camp.
+        - 'reunited' if all known members occupy exactly the same camp.
+        - 'separated' if active members are distributed across multiple distinct known camps.
+        """
         loc = self.env.ref("refugee_crisis_erp.camp_location_unknown", raise_if_not_found=False)
         for rec in self:
             members = rec.member_ids.filtered(lambda m: m.active and not m.deceased)

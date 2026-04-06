@@ -5,6 +5,10 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { standardActionServiceProps } from "@web/webclient/actions/action_service";
 
+/**
+ * Dynamically loads the Leaflet JS/CSS dependencies only when the map dashboard is accessed.
+ * Prevents unnecessary upfront load times for users who never open the map.
+ */
 function loadLeaflet() {
     if (window.L) {
         return Promise.resolve();
@@ -24,6 +28,10 @@ function loadLeaflet() {
     });
 }
 
+/**
+ * OWL Component defining the main Camp Map Dashboard.
+ * Embeds a Leaflet.js interactive map marking the occupancy limits of all camps globally.
+ */
 export class CampMapDashboard extends Component {
     static props = { ...standardActionServiceProps };
     static template = xml`
@@ -38,6 +46,10 @@ export class CampMapDashboard extends Component {
         this.mapRef = useRef("map");
         onMounted(() => this._initMap());
     }
+    /**
+     * Internal async initialization. 
+     * Waits for Leaflet resources, searches properties via the ORM, and populates colored markers.
+     */
     async _initMap() {
         await loadLeaflet();
         const camps = await this.orm.searchRead(

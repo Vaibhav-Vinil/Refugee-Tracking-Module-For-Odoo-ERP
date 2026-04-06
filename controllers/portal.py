@@ -9,6 +9,10 @@ class RefugeePortal(http.Controller):
 
     @http.route("/refugee_crisis_erp/camp_locations", type="jsonrpc", auth="user")
     def camp_locations(self):
+        """
+        API endpoint that fetches core logistical and geographical metadata 
+        for all active camps. Typically consumed by the OWL Leaflet dashboard.
+        """
         camps = request.env["refugee.camp.management"].search_read(
             [],
             ["name", "latitude", "longitude", "current_occupancy", "total_capacity", "overcrowded_status"],

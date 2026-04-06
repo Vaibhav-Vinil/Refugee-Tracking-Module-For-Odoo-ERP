@@ -4,6 +4,11 @@ from odoo import api, fields, models
 
 
 class RefugeeLogisticsTask(models.Model):
+    """
+    Manages logistics operations, such as transporting resources between camps, 
+    setting up infrastructure, or distributing large-scale aid. 
+    Controls state transitions from 'todo' up to 'done', affecting the underlying inventory.
+    """
     _name = "refugee.logistics.task"
     _description = "Logistics Task"
     _inherit = ["mail.thread", "mail.activity.mixin"]
@@ -76,6 +81,12 @@ class RefugeeLogisticsTask(models.Model):
     notes = fields.Text("Notes")
 
     def action_tick(self):
+        """
+        Progresses the logistics task state forward.
+        Enforces that only administrators can authorize accepted tasks.
+        Upon reaching the 'done' state for deliveries, it increments the destination 
+        camp's resource inventory with the delivered quantity.
+        """
         is_admin = self.env.user.has_group('refugee_crisis_erp.group_refugee_manager')
         for rec in self:
             if rec.status == 'todo':
@@ -97,6 +108,10 @@ class RefugeeLogisticsTask(models.Model):
         return True
 
     def action_cross(self):
+        """
+        Cancels or abruptly stops a logistics task depending on its current state.
+        Tasks in progress become 'stopped', while earlier states are marked as 'cancelled'.
+        """
         for rec in self:
             if rec.status in ('todo', 'accepted', 'authorized'):
                 rec.status = 'cancelled'

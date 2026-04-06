@@ -4,6 +4,10 @@ from odoo import api, fields, models
 
 
 class RefugeeResourceInventory(models.Model):
+    """
+    Tracks inventory of essential resources bound to a specific physical camp.
+    Automatically flags low-stock conditions and initiates logistics resupply tasks.
+    """
     _name = "refugee.resource.inventory"
     _description = "Camp Resource Inventory"
     _inherit = ["mail.thread"]
@@ -34,6 +38,10 @@ class RefugeeResourceInventory(models.Model):
 
     @api.depends("quantity_available", "quantity_required")
     def _compute_stock_ratio(self):
+        """
+        Computes the ratio of current available stock versus required stock.
+        Used visually to display stock health in progress bars.
+        """
         for rec in self:
             req = rec.quantity_required
             if req:
@@ -42,6 +50,11 @@ class RefugeeResourceInventory(models.Model):
                 rec.stock_ratio = 100.0
 
     def write(self, vals):
+        """
+        Extends the standard write operation to monitor inventory drops.
+        If stock slips below 20% of required amounts, automatically creates a high-priority 
+        logistics task demanding emergency resupply, circumventing manual monitoring.
+        """
         res = super().write(vals)
         if "quantity_available" in vals:
             for rec in self:
@@ -66,6 +79,10 @@ class RefugeeResourceInventory(models.Model):
 
     @api.model
     def _cron_check_low_stock(self):
+        """
+        Cron scheduled action that scans inventory systematically for critically low levels 
+        and posts an alert into the chatter so administrators are notified in real-time.
+        """
         threshold = int(
             float(
                 self.env["ir.config_parameter"]

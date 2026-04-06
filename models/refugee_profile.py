@@ -12,6 +12,11 @@ _logger = logging.getLogger(__name__)
 
 
 class RefugeeProfile(models.Model):
+    """
+    Central demographic, logistical, and health data for every refugee.
+    Governs their lifecycle (journey_stage), family interactions, and skills.
+    Coordinates tightly with family, logistics, and resource models.
+    """
     _name = "refugee.profile"
     _description = "Refugee Profile"
     _inherit = ["mail.thread", "mail.activity.mixin"]
@@ -251,6 +256,13 @@ class RefugeeProfile(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        """
+        Extends creation heavily to support:
+        1. Implicit Family Linking: Creates a new family on the fly if a family_name is passed but no ID.
+        2. Sequence matching for automatic ID generation.
+        3. Cascading changes across sibling family members.
+        4. Invoking Medical coordinators if user flags critical status on creation.
+        """
         Family = self.env["refugee.family"]
         out_vals = []
         for vals in vals_list:
@@ -276,6 +288,12 @@ class RefugeeProfile(models.Model):
         return records
 
     def write(self, vals):
+        """
+        Intercepts field updates to recompute implicit structures.
+        If a refugee becomes deceased, forces promotion of a new family head. 
+        Synchronizes head logic to guarantee isolation of head responsibilities globally.
+        Triggers emergency notification if health statuses shift to critical.
+        """
         vals = dict(vals)
         notify_candidates = self.env["refugee.profile"]
         if vals.get("requires_urgent_care"):
@@ -343,6 +361,10 @@ class RefugeeProfile(models.Model):
             ).send()
 
     def _sync_family_head(self):
+        """
+        Guarantees that when a profile becomes marked as head of family, all other valid family 
+        members are stripped of the status to preserve logical unique database invariants.
+        """
         for rec in self:
             if not rec.family_id or rec.deceased:
                 continue
@@ -400,6 +422,10 @@ class RefugeeProfile(models.Model):
         }
 
     def action_auto_assign_roles(self):
+        """
+        Matches profiles dynamically based on their attached skill models to open camp roles.
+        If their subsets of skills overlap requirements and there's role capacity, automatically slots them.
+        """
         """Match skills to camp roles with free capacity."""
         Role = self.env["refugee.camp.role"]
         assigned = 0

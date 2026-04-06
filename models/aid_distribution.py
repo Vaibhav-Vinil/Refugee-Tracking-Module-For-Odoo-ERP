@@ -4,6 +4,10 @@ from odoo import api, fields, models
 
 
 class RefugeeAidDistribution(models.Model):
+    """
+    Tracks direct aid delivered to individual refugees.
+    Can be used by volunteers at point of delivery to log resource allocations.
+    """
     _name = "refugee.aid.distribution"
     _description = "Aid Distribution Line"
     _inherit = ["mail.thread", "mail.activity.mixin"]
@@ -47,6 +51,9 @@ class RefugeeAidDistribution(models.Model):
     notes = fields.Text("Delivery Notes")
 
     def action_mark_delivered(self):
+        """
+        Finalizes an aid distribution log by marking it delivered. 
+        """
         for rec in self:
             if rec.status == 'pending':
                 rec.status = 'delivered'
