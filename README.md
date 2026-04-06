@@ -1,5 +1,19 @@
 # Onwards – Refugee Crisis Management ERP
 
+> [!IMPORTANT]
+> **🚀 Live Demo Access**
+> You can access a live instance of this system by visiting: [Onwards System Login](https://metalline-traci-reposefully.ngrok-free.dev/web/login?redirect=%2Fodoo%3F)
+> 
+> **Login Credentials:**
+> - **Email / Username:** `admin`
+> - **Password:** `admin`
+> 
+> **Getting Started:**
+> 1. Log in using the credentials above.
+> 2. Click the **Apps** icon button on the dashboard/top menu.
+> 3. Click on the **Onwards** module icon to launch it.
+> 4. Click on the **Refugees** tab to begin exploring the system in action.
+
 An **enterprise-grade humanitarian management system** built on Odoo ERP, designed to coordinate refugee identities, camp operations, automated logistics, and continuous resource distribution during crisis situations.
 
 This module provides a **centralized, scalable, and real-time platform** for NGOs, governments, and relief organizations to efficiently manage large-scale humanitarian efforts, bypassing traditional paperwork and manual coordination.
