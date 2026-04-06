@@ -100,7 +100,7 @@ class RefugeeLogisticsTask(models.Model):
                 rec.status = 'in_progress'
             elif rec.status == 'in_progress':
                 rec.status = 'done'
-                # Delivery completed — add quantity to camp's resource inventory
+                # Delivery completed add quantity to camp's resource inventory
                 if rec.resource_id and rec.quantity > 0 and rec.task_type == 'delivery':
                     rec.resource_id.sudo().write({
                         'quantity_available': rec.resource_id.quantity_available + rec.quantity

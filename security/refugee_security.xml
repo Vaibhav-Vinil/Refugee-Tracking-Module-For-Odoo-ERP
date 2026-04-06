@@ -107,7 +107,7 @@
         <field name="groups" eval="[(4, ref('refugee_crisis_erp.group_refugee'))]"/>
     </record>
 
-    <!-- Open family visibility to Camp In Charge (all camps — to track separated families) -->
+    <!-- Open family visibility to Camp In Charge (all camps- to track separated families) -->
     <record id="rule_family_cinc_open" model="ir.rule">
         <field name="name">Camp In Charge: See all families</field>
         <field name="model_id" ref="model_refugee_family"/>

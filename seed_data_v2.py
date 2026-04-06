@@ -2,7 +2,7 @@
 """
 Run from the Odoo server root (folder that contains odoo.conf and Workshop/).
 
-PowerShell — the opening '@ must be alone on its line (same for closing '@):
+PowerShell,  the opening '@ must be alone on its line (same for closing '@):
 
     @'
     exec(open(r'Workshop/refugee_crisis_erp/seed_data_v2.py', encoding='utf-8').read())
