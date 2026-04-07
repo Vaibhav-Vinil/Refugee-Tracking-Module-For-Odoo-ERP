@@ -2,14 +2,14 @@
 <odoo>
     <record id="paperformat_refugee_id_card" model="report.paperformat">
         <field name="name">Refugee ID Card</field>
-        <field name="format">custom</field>
-        <field name="page_height">85</field>
-        <field name="page_width">54</field>
+        <field name="format">A4</field>
+        <field name="page_height" eval="0"/>
+        <field name="page_width" eval="0"/>
         <field name="orientation">Portrait</field>
-        <field name="margin_top">2</field>
-        <field name="margin_bottom">2</field>
-        <field name="margin_left">2</field>
-        <field name="margin_right">2</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
         <field name="header_line" eval="False"/>
         <field name="dpi">90</field>
     </record>
@@ -28,35 +28,53 @@
 
     <template id="report_refugee_id_card">
         <t t-call="web.basic_layout">
-            <div class="page">
+            <!--
+                Card rendered natively as portrait: 54mm wide x 85.6mm tall.
+                No CSS rotation needed — the card's long side (85.6mm) runs
+                parallel to the A4 page's long side (297mm) automatically.
+                Layout: org header → photo → name/ID/nationality → QR code.
+            -->
+            <div class="page" style="width: 210mm; min-height: 297mm; padding: 30mm 0; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;">
                 <t t-foreach="docs" t-as="o">
-                    <div style="width: 100%; border: 1px solid #333; border-radius: 8px; padding: 8px; margin-bottom: 8px;">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <tr>
-                                <td style="width: 35%; vertical-align: top;">
-                                    <t t-if="o.id_card_photo">
-                                        <img t-att-src="image_data_uri(o.id_card_photo)" style="max-width: 100%; max-height: 90pt; border-radius: 4px;" alt="Photo"/>
-                                    </t>
-                                    <t t-else="">
-                                        <div style="height: 90pt; background: #eee; text-align: center; line-height: 90pt; font-size: 9pt;">No photo</div>
-                                    </t>
-                                </td>
-                                <td style="width: 65%; vertical-align: top; padding-left: 8px;">
-                                    <div style="font-size: 8pt; color: #666;">Onwards</div>
-                                    <div style="font-size: 14pt; font-weight: bold;" t-out="o.name"/>
-                                    <div style="font-size: 11pt; margin-top: 4px;"><span t-out="o.refugee_id"/></div>
-                                    <t t-if="o.nationality_id">
-                                        <div style="font-size: 9pt; margin-top: 4px;" t-out="o.nationality_id.name"/>
-                                    </t>
-                                    <div style="margin-top: 8px;">
-                                        <t t-if="o.qr_code">
-                                            <img t-att-src="image_data_uri(o.qr_code)" style="width: 72pt; height: 72pt;" alt="QR"/>
-                                        </t>
-                                    </div>
-                                    <div style="font-size: 7pt; color: #444; margin-top: 4px;">Scan to open profile in Odoo (login required).</div>
-                                </td>
-                            </tr>
-                        </table>
+                    <!-- Card: 54mm wide x 85.6mm tall (portrait) -->
+                    <div style="width: 54mm; height: 85.6mm; border: 1.5px solid #333; border-radius: 6px; padding: 4px; box-sizing: border-box; background: #fff; display: flex; flex-direction: column; align-items: center; overflow: hidden; margin-bottom: 10mm;">
+
+                        <!-- Org name header -->
+                        <div style="font-size: 6pt; color: #888; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; margin-bottom: 3px; width: 100%;">Onwards</div>
+
+                        <!-- Photo -->
+                        <div style="width: 100%; height: 34mm; display: flex; align-items: center; justify-content: center; margin-bottom: 3px;">
+                            <t t-if="o.id_card_photo">
+                                <img t-att-src="image_data_uri(o.id_card_photo)"
+                                     style="max-width: 100%; max-height: 34mm; border-radius: 4px; object-fit: cover; display: block; margin: 0 auto;"
+                                     alt="Photo"/>
+                            </t>
+                            <t t-else="">
+                                <div style="width: 100%; height: 34mm; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 7pt; color: #999;">No photo</div>
+                            </t>
+                        </div>
+
+                        <!-- Name -->
+                        <div style="font-size: 9pt; font-weight: bold; text-align: center; line-height: 1.2; width: 100%;" t-out="o.name"/>
+
+                        <!-- Refugee ID -->
+                        <div style="font-size: 7pt; color: #444; text-align: center; margin-top: 2px; width: 100%;"><span t-out="o.refugee_id"/></div>
+
+                        <!-- Nationality -->
+                        <t t-if="o.nationality_id">
+                            <div style="font-size: 6.5pt; color: #666; text-align: center; margin-top: 2px; width: 100%;" t-out="o.nationality_id.name"/>
+                        </t>
+
+                        <!-- QR code + caption — pushed to bottom, centred -->
+                        <div style="margin-top: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; text-align: center;">
+                            <t t-if="o.qr_code">
+                                <img t-att-src="image_data_uri(o.qr_code)"
+                                     style="width: 90pt; height: 90pt; display: block; margin: 0 auto;"
+                                     alt="QR"/>
+                            </t>
+                            <div style="font-size: 5pt; color: #777; text-align: center; margin-top: 2px; width: 100%;">Scan to open profile (login required).</div>
+                        </div>
+
                     </div>
                 </t>
             </div>
