@@ -36,6 +36,7 @@
             "refugee_crisis_erp/static/src/camp_map/camp_map.js",
             "refugee_crisis_erp/static/src/fields/family_head_boolean_field.js",
             "refugee_crisis_erp/static/src/fields/stock_progress_bar_field.js",
+            "refugee_crisis_erp/static/src/translator/translator.js",
         ],
     },
     "installable": True,

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Translator client action (powered by LibreTranslate) -->
+    <record id="action_refugee_translator" model="ir.actions.client">
+        <field name="name">Translator</field>
+        <field name="tag">refugee_crisis_erp.translator_dashboard</field>
+    </record>
+
     <record id="action_refugee_camp_map" model="ir.actions.client">
         <field name="name">Camp Map</field>
         <field name="tag">refugee_crisis_erp.camp_map_dashboard</field>
@@ -53,4 +59,8 @@
 
     <menuitem id="menu_refugee_dashboard_map" name="Camp Map" parent="menu_refugee_dashboard" sequence="30"
         action="action_refugee_camp_map" groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer"/>
+    <menuitem id="menu_refugee_translator" name="Translator" parent="menu_refugee_root" sequence="90"
+        action="action_refugee_translator"
+        groups="refugee_crisis_erp.group_refugee_manager,refugee_crisis_erp.group_refugee_volunteer,refugee_crisis_erp.group_refugee,refugee_crisis_erp.group_refugee_camp_in_charge"/>
+
 </odoo>
