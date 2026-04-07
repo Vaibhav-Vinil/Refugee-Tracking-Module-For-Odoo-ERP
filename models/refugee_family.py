@@ -38,8 +38,8 @@ class RefugeeFamily(models.Model):
     status = fields.Selection(
         selection=[
             ("reunited", "Reunited"),
-            ("separated", "Separated: the families are in separate camps and we are aware of the location of these members"),
-            ("location_unknown", "Location unknown/Missing"),
+            ("separated", "Partial"),
+            ("location_unknown", "Seperated"),
         ],
         default="reunited",
         compute="_compute_family_status",
