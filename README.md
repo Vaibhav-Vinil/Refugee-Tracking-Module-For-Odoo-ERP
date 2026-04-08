@@ -1,99 +1,208 @@
-# Onwards – Refugee Crisis Management ERP
+# Onwards - Refugee Crisis Management ERP
 
 > [!IMPORTANT]
-> **🚀 Live Demo Access**
-> You can access a live instance of this system by visiting: [Onwards System Login](https://metalline-traci-reposefully.ngrok-free.dev/web/login?redirect=%2Fodoo%3F)
-> 
-> **Login Credentials:**
-> - **Email / Username:** `admin`
-> - **Password:** `admin`
-> 
-> **Getting Started:**
-> 1. Log in using the credentials above.
-> 2. Click the **Apps** icon button on the dashboard/top menu.
-> 3. Click on the **Onwards** module icon to launch it.
-> 4. Click on the **Refugees** tab to begin exploring the system in action.
+> ## Demo Video (Watch First)
+> **Direct demo file:** [`Demonstration.mp4`](./Demonstration.mp4)
+>
+> Recruiters and reviewers can open the full walkthrough video directly from this module folder.
 
-An **enterprise-grade humanitarian management system** built on Odoo ERP, designed to coordinate refugee identities, camp operations, automated logistics, and continuous resource distribution during crisis situations.
+Onwards is an Odoo 19 module for managing refugee operations across profiles, families, camps, resources, logistics, volunteers, and reporting in one coordinated workflow.
 
-This module provides a **centralized, scalable, and real-time platform** for NGOs, governments, and relief organizations to efficiently manage large-scale humanitarian efforts, bypassing traditional paperwork and manual coordination.
+An enterprise-grade humanitarian management system built on Odoo ERP, designed to coordinate refugee identities, camp operations, automated logistics, and continuous resource distribution during crisis situations.
+
+This module provides a centralized, scalable, and real-time platform for NGOs, governments, and relief organizations to efficiently manage large-scale humanitarian efforts, bypassing traditional paperwork and manual coordination.
 
 ## Overview
 
 During humanitarian crises, administrating complex refugee populations, managing rapid resource consumption, and distributing aid effectively is critical.
 
-**Onwards** addresses these operational hurdles by integrating:
-- Deep Demographic & Family Management
-- Physical Infrastructure & Camp Control
-- Automated Supply Chain & Resource Inventory
-- Workforce & Logistics Synchronization 
+Onwards addresses these operational hurdles by integrating:
 
-into a **single unified ERP ecosystem**.
+- Deep Demographic and Family Management
+- Physical Infrastructure and Camp Control
+- Automated Supply Chain and Resource Inventory
+- Workforce and Logistics Synchronization
+
+into a single unified ERP ecosystem.
+
+
+## Current Scope (Up to Date)
+
+The current module version (`19.0.1.0.1`) includes:
+
+- Refugee profiles with identity, journey stage, medical/vulnerability details, QR/ID card support.
+- Family management with head-of-family constraints and family status tracking.
+- Camp management with geolocation, occupancy, and "Location Unknown" support.
+- Resource inventory with stock progress and low-stock automation.
+- Logistics task workflows and delivery-driven stock updates.
+- Resource request approvals that can generate logistics deliveries.
+- Volunteer operations and user-linked volunteer profile helpers.
+- Skill and camp-role matching for workforce allocation.
+- Aid distribution tracking for direct beneficiary delivery.
+- Dashboard entries (graph, pivot, camp map) and a translator client action.
 
 ## Comprehensive Feature List
 
-### Refugee Profiles & Advanced Demographics
-- **Basic Registration**: Track names, gender, nationalities (linked to `res.country`), and languages spoken (`res.lang`).
-- **Biometric Simulation**: Includes simulated fingerprint hashing (SHA-256 via ID + Name) for unique identification and prevention of duplicate registrations.
-- **Medical & Vulnerability Tracking**: 
-  - Tracks specific medical conditions and flags profiles requiring **urgent care**.
-  - Registers deceased statuses dynamically. Automatically demotes deceased family heads and promotes valid successors.
-- **Journey Stage Lifecycle**: Monitor intake statuses from `Border intake` → `Vetting` → `Medical` → `Assigned` to `Relocated / Integrated`.
+### Refugee Profiles and Advanced Demographics
+
+- **Basic Registration:** Track names, gender, nationalities (linked to `res.country`), and languages spoken (`res.lang`).
+- **Biometric Simulation:** Simulated fingerprint hashing (SHA-256 via ID + Name) for unique identification and duplicate prevention.
+- **Medical and Vulnerability Tracking:**
+  - Track medical conditions and flag profiles requiring urgent care.
+  - Handle deceased statuses dynamically, including family-head reassignment where applicable.
+- **Journey Stage Lifecycle:** Monitor intake statuses from `Border intake` -> `Vetting` -> `Medical` -> `Assigned` to `Relocated / Integrated`.
 
 ### Family Unit Management
-- **Intelligent Family Grouping**: Binds refugee profiles into synchronized family units with strict, database-level 1:1 constraints to ensure only one Head of Household/Family exists at a time.
-- **Geographic Status Syncing**: Real-time computation of structural integrity:
-  - `Reunited`: All family members reside in identical camps.
-  - `Separated`: Members are geographically split across multiple known camps (includes voluntary separation notes).
-  - `Location Unknown`: One or more members are flagged as missing or placed in the specialized "Location Unknown" camp.
+
+- **Intelligent Family Grouping:** Bind refugee profiles into synchronized family units with strict 1:1 head-of-family constraints.
+- **Geographic Status Syncing:** Real-time family integrity computation:
+  - `Reunited`: All family members reside in the same camp.
+  - `Separated`: Members are split across multiple known camps.
+  - `Location Unknown`: One or more members are missing or placed in the specialized "Location Unknown" camp.
 
 ### Camp Infrastructure Control
-- **Physical Locations**: Coordinate shelters utilizing geo-positioning (latitude, longitude) and specialized hierarchy tracking.
-- **Occupancy Automation**: Defines total capacity per shelter. Automatically tracks the sum of all active, living refugees inside a camp and emits `overcrowded` warnings automatically if bounds are exceeded.
-- **Sentinel Locations**: Utilizes specialized logic to identify unaccounted individuals through 'Location Unknown' mechanisms.
+
+- **Physical Locations:** Coordinate shelters with geolocation data (latitude/longitude).
+- **Occupancy Automation:** Track active occupancy against camp capacity and raise overcrowding indicators when limits are exceeded.
+- **Sentinel Location Support:** Built-in handling for "Location Unknown" refugee status routing.
 
 ### Automated Resource Inventory
-- **Granular Categories**: Monitors `Food`, `Water`, `Medical`, and `Other` utilities.
-- **Dynamic Stock Fill Percentages**: Computes real-time `Quantity Available` vs `Quantity Required` to generate visual progress indicators. 
-- **Automated Emergency Resupply**: If inventory dips drastically (below 20% of quota), the inventory kernel circumvents manual workflows and automatically spawns a Priority High delivery logistics task.
 
-### Logistics & Auto-Supply Chain
-- **Task Types**: Handles `Delivery`, `Transport`, and infrastructural `Setup`. Enforces prioritization scales (`Low` → `Very High`).
-- **Workflow State Machine**: `To Do` → `Accepted` → `Authorized` → `In Progress` → `Done` (or `Cancelled`/`Stopped Abruptly`).
-- **Strict Authorization**: Integrates deep validation rules to ensure only users with Administrative privileges can authorize accepted logistics tasks to prevent pipeline hijacking.
-- **Inventory Injection**: Once a `Delivery` logictics task executes state `Done`, it automatically increments the target camp's native resource quantities directly.
+- **Granular Categories:** Monitor `Food`, `Water`, `Medical`, and `Other`.
+- **Dynamic Stock Fill Percentages:** Compute real-time `Quantity Available` versus `Quantity Required`.
+- **Automated Emergency Resupply:** Low stock threshold checks can automatically create high-priority logistics delivery tasks.
+
+### Logistics and Auto-Supply Chain
+
+- **Task Types:** `Delivery`, `Transport`, and `Setup`, with prioritization from `Low` to `Very High`.
+- **Workflow State Machine:** `To Do` -> `Accepted` -> `Authorized` -> `In Progress` -> `Done` (or `Cancelled` / `Stopped Abruptly`).
+- **Strict Authorization:** Authorization flow is restricted to appropriate administrative roles.
+- **Inventory Injection:** Completing `Delivery` tasks updates target camp resource quantities.
 
 ### Resource Requests
-- Inter-camp or personnel requests demanding critical supplies.
-- **Automated Forwarding**: When an administrative user 'Approves' a resource request, it instantly proxies it into a structured logistics Delivery Task directed back at the source camp.
+
+- Capture inter-camp/personnel critical supply requests.
+- Admin approval can forward requests into structured logistics delivery tasks.
 
 ### Volunteer Management
-- Assign personnel to groups and track personal availability.
-- **State Inference**: System computes if a volunteer is `Available` or `On Duty` natively by scraping their concurrently assigned, in-progress logistics tasks.
-- **Self-Enrollment**: Verified volunteers can organically add themselves into open operational logistics tasks seamlessly.
 
-### Operational Role Assignments & Skill Matrix
-- **Skill Compatibility**: Compare complex refugee capability intersections against physical camp workforce demands.
-- **Dynamic Capacity Control**: Camp roles have designated utilization budgets. 
-- **Algorithmic Selection**: One-click mass assignment algorithm iterates through hundreds of profiles, compares their registered skills against open roles, and automatically assigns logical, open operational positions.
+- Assign volunteers to operations and track availability.
+- Infer volunteer duty status from active logistics assignments.
+- Allow eligible volunteers to self-enroll into open logistics tasks.
+
+### Operational Role Assignments and Skill Matrix
+
+- Compare refugee skills with camp role requirements.
+- Enforce role capacity constraints.
+- Support algorithmic and assisted role allocation workflows.
 
 ### Direct Aid Distribution Log
-- Decentralized logs providing accountability on the final mile metric (direct beneficiary allocations). Complete auditing on dates, assigned volunteer, and destination individual.
+
+- Track direct beneficiary allocations with auditable entries (date, volunteer, recipient).
+
+## Functional Areas
+
+### 1) Core Models
+
+- `refugee.profile`
+- `refugee.family`
+- `refugee.camp`
+- `refugee.resource.inventory`
+- `refugee.logistics.task`
+- `refugee.resource.request`
+- `refugee.volunteer`
+- `refugee.skill`
+- `refugee.camp.role`
+- `refugee.aid.distribution`
+- `res.users` extension hooks for refugee/volunteer flows
+
+### 2) Security and Roles
+
+Defined in `security/refugee_security.xml` and `security/ir.model.access.csv`:
+
+- `Admin`
+- `Volunteer`
+- `Camp In Charge`
+- `Refugee`
+
+Includes record rules for camp-scoped access (profiles/resources/logistics/requests) and open visibility where needed (for example, family tracking).
+
+### 3) Menus and UI
+
+Main app menu: `Onwards`
+
+Current menu items include:
+
+- Refugees
+- Families
+- Camps
+- Camp Roles
+- Skills
+- Resources
+- Resource Requests
+- Logistics
+- Dashboard (Population Graph, Pivot, Camp Map)
+- Translator
+
+### 4) Reports
+
+- Refugee ID Card PDF report (`report/refugee_reports.xml`)
+- Includes QR code rendering and compact card layout for print/export.
+
+### 5) Automation/Data
+
+- Sequence generation: `data/refugee_sequence.xml`
+- Location Unknown seed record: `data/refugee_location_unknown.xml`
+- Scheduled low-stock check cron: `data/refugee_cron.xml`
+- Optional demo records: `demo/demo_data.xml`
+
+### 6) Frontend Assets
+
+Loaded through `web.assets_backend`:
+
+- `static/src/camp_map/camp_map.js`
+- `static/src/fields/family_head_boolean_field.js`
+- `static/src/fields/stock_progress_bar_field.js`
+- `static/src/translator/translator.js`
 
 ## Installation
 
 ### Prerequisites
-- Odoo (v19.0 recommended)
-- Python 3.x with the `qrcode` package installed (`pip install qrcode`)
-- PostgreSQL
 
-### Steps
-1. Clone the repository into your Odoo Workshop directory:
+- Odoo `19.0`
+- Python 3.x
+- PostgreSQL
+- Python dependency: `qrcode`
+
+Install dependency:
+
 ```bash
-git clone https://github.com/Vaibhav-Vinil/Refugee-Tracking-Module-For-Odoo-ERP.git
+pip install qrcode
 ```
-2. Update the app list internally within Odoo admin interfaces.
-3. Install the module natively titled **Onwards** (`refugee_crisis_erp`).
+
+### Setup
+
+1. Place this addon in your Odoo addons path (for this repo, under `Workshop/`).
+2. Restart Odoo server.
+3. In Apps, click `Update Apps List`.
+4. Search and install `Onwards` (`refugee_crisis_erp`).
+
+## Repository Notes
+
+- Manifest: `__manifest__.py`
+- Model imports: `models/__init__.py`
+- Seed utility script: `seed_data_v2.py`
+- Demo video: [`Demonstration.mp4`](./Demonstration.mp4)
 
 ## Technical Architecture Overview
-Developed explicitly for Odoo 19 utilizing native web inheritances, complex computational triggers, robust record rules (`security/ir.model.access.csv` & `<record id="rule_camp_visibility">`), and a sprawling multi-file framework handling massive demo data seeding via built-in utility scripts (`seed_data_v2.py`). Included are dedicated JS UI augmentations mimicking geographic representations.
+
+Developed for Odoo 19 using native ORM models, computed fields, onchange/constraint validations, record rules, scheduled jobs, QWeb reporting, and web client assets.
+
+Key architecture references:
+
+- Access controls: `security/ir.model.access.csv`
+- Role groups and record rules: `security/refugee_security.xml`
+- Scheduled automation: `data/refugee_cron.xml`
+- Sequence and base records: `data/refugee_sequence.xml`, `data/refugee_location_unknown.xml`
+- Report template: `report/refugee_reports.xml`
+- UI assets: `static/src/camp_map/camp_map.js`, `static/src/fields/family_head_boolean_field.js`, `static/src/fields/stock_progress_bar_field.js`, `static/src/translator/translator.js`
