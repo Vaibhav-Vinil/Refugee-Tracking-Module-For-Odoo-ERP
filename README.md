@@ -1,10 +1,14 @@
 # Onwards - Refugee Crisis Management ERP
 
-> [!IMPORTANT]
-> ## Demo Video (Watch First)
-> **Direct demo file:** [`Demonstration.mp4`](./Demonstration.mp4)
->
-> Recruiters and reviewers can open the full walkthrough video directly from this module folder.
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=vHOM0tKLPxs" target="_blank">
+    <img src="https://img.youtube.com/vi/vHOM0tKLPxs/maxresdefault.jpg" alt="Onwards Demo Video" style="width:100%;">
+  </a>
+  <br>
+  <b>Click the image above to watch the demonstration in a new tab.</b>
+</p>
+
+---
 
 Onwards is an Odoo 19 module for managing refugee operations across profiles, families, camps, resources, logistics, volunteers, and reporting in one coordinated workflow.
 
