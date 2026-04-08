@@ -5,7 +5,7 @@
     <img src="https://img.youtube.com/vi/vHOM0tKLPxs/maxresdefault.jpg" alt="Onwards Demo Video" style="width:100%;">
   </a>
   <br>
-  <b>Click the image above to watch the demonstration in a new tab.</b>
+  <b>Click the image above to watch the demonstration.</b>
 </p>
 
 ---
